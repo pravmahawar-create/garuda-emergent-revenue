@@ -1,0 +1,142 @@
+{
+  "theme": "Premium Enterprise Black & Gold - Operator Console",
+  "typography": {
+    "fonts": {
+      "heading": "Playfair Display",
+      "body": "Manrope",
+      "mono": "JetBrains Mono"
+    },
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl tracking-tight font-heading font-medium text-text_primary",
+      "h2": "text-2xl sm:text-3xl tracking-tight font-heading text-text_primary",
+      "h3": "text-xl sm:text-2xl font-heading text-text_primary",
+      "h4": "text-lg font-body font-semibold text-text_primary",
+      "body": "text-base font-body text-text_secondary leading-relaxed",
+      "small": "text-sm font-body text-text_muted",
+      "kpi_value": "text-4xl sm:text-5xl font-heading font-medium text-gold_primary tracking-tighter"
+    },
+    "import_commands": "Use Google Fonts for Playfair Display and Manrope."
+  },
+  "colors": {
+    "bg": "#050505",
+    "surface": "#0F0F11",
+    "elevated_surface": "#16161A",
+    "border": "#222226",
+    "text_primary": "#FAFAFA",
+    "text_secondary": "#A1A1AA",
+    "text_muted": "#71717A",
+    "gold_primary": "#D4AF37",
+    "gold_soft": "rgba(212, 175, 55, 0.15)",
+    "gold_muted": "#AA8A2A",
+    "success": "#4ADE80",
+    "danger": "#F87171",
+    "warning": "#FBBF24"
+  },
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-[#050505]/70 border-b border-[#222226]",
+    "shadows": {
+      "card": "shadow-[0_4px_24px_rgba(0,0,0,0.6)]",
+      "gold_glow": "shadow-[0_0_15px_rgba(212,175,55,0.15)]"
+    },
+    "borders": "1px solid #222226. Never use full transparency on surfaces that overlap content. Dropdowns, Modals, and Headers MUST have solid or heavily blurred semi-solid backgrounds."
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-gold_primary text-black font-semibold hover:bg-[#F3CE5A] transition-colors rounded-sm",
+      "secondary": "bg-transparent border border-border text-text_primary hover:border-gold_primary transition-colors rounded-sm",
+      "ghost": "bg-transparent text-text_secondary hover:text-text_primary hover:bg-elevated_surface transition-colors rounded-sm"
+    },
+    "cards": {
+      "base": "bg-surface border border-border rounded-lg p-6 overflow-hidden",
+      "hover": "hover:border-gold_primary/50 transition-colors duration-300"
+    },
+    "inputs": {
+      "base": "bg-elevated_surface border border-border text-text_primary rounded-sm px-4 py-2 focus:ring-1 focus:ring-gold_primary focus:border-gold_primary outline-none transition-all placeholder-text_muted"
+    },
+    "kanban": {
+      "column": "bg-surface rounded-lg p-4 flex flex-col gap-3 h-full border border-border",
+      "item": "bg-elevated_surface border border-border p-4 rounded-md cursor-grab hover:border-gold_primary/40 shadow-card"
+    },
+    "tables": {
+      "header": "text-xs uppercase tracking-[0.15em] text-text_muted pb-3 border-b border-border",
+      "row": "border-b border-border hover:bg-elevated_surface/50 transition-colors",
+      "cell": "py-4 text-sm text-text_primary"
+    },
+    "timeline": {
+      "container": "relative pl-6 border-l border-border",
+      "dot": "absolute -left-[5px] w-2.5 h-2.5 rounded-full bg-gold_primary ring-4 ring-bg",
+      "item": "mb-8 last:mb-0"
+    }
+  },
+  "grids_layouts": {
+    "app_layout": "Flex container with fixed Sidebar (w-64) and flex-1 main content area.",
+    "sidebar": "Fixed left, w-64, h-screen, bg-bg border-r border-border.",
+    "top_nav": "Sticky top-0, h-16, backdrop-blur-xl bg-[#050505]/80 border-b border-border, z-50. NO FULL TRANSPARENCY.",
+    "dashboard_grid": "Bento grid architecture. grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-6. Prioritize Z-pattern for summaries.",
+    "spacing": "Generous spacing. p-8 to p-12 for page wrappers. gap-6 to gap-8 between major sections."
+  },
+  "motion": {
+    "page_transition": "Framer Motion: initial opacity 0, y 10 -> animate opacity 1, y 0, duration 0.4s ease-out.",
+    "hover_micro": "transition: all 0.2s ease. scale 1.02 on interactive cards, slight border color change.",
+    "list_stagger": "Stagger children by 0.05s on mount."
+  },
+  "accessibility": {
+    "contrast": "Ensure text meets APCA standards. Minimum text color #A1A1AA on #0F0F11.",
+    "focus": "All focusable elements must have focus:ring-1 focus:ring-gold_primary outline-none.",
+    "testing": "CRITICAL: All interactive and key informational elements MUST include a `data-testid` attribute (e.g., `data-testid='login-submit-btn'`, `data-testid='kpi-revenue'`)."
+  },
+  "media": {
+    "icons": "Use @phosphor-icons/react (Duotone or Regular weight). Do not use AI emojis.",
+    "charts": "Recharts. Grid lines should be #222226. Tooltip bg #0F0F11, border #222226. Line/Bar colors #D4AF37."
+  },
+  "3d_libraries_and_steps": {
+    "libraries": "Framer Motion for general UI interactions. Optional: lightweight Recharts for dashboard analytics.",
+    "steps": "No heavy 3D required for this functional enterprise dashboard. Focus on high-performance 2D rendering and smooth framer-motion micro-interactions."
+  },
+  "image_urls": {
+    "auth_background": {
+      "url": "https://images.pexels.com/photos/20576695/pexels-photo-20576695.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Luxurious abstract gold lines on black, suitable for login page split-screen background."
+    },
+    "user_avatar_1": {
+      "url": "https://images.pexels.com/photos/12396627/pexels-photo-12396627.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Professional executive woman avatar."
+    },
+    "user_avatar_2": {
+      "url": "https://images.pexels.com/photos/33385528/pexels-photo-33385528.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Professional executive man avatar."
+    },
+    "abstract_data_placeholder": {
+      "url": "https://images.pexels.com/photos/27141316/pexels-photo-27141316.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "description": "Digital interface showcasing futuristic graphs and data analytics in low light."
+    }
+  },
+  "instructions_to_main_agent": [
+    "You are building GARUDA AI, a luxury AI Operating System module.",
+    "Use Tailwind CSS for styling. Implement the custom colors strictly mapping to the hex codes provided in 'colors'.",
+    "Create the specific modules listed: Auth, Dashboard, Opportunity Manager, Task Manager, Activity Timeline, Earnings, Analytics, Notifications, Settings.",
+    "Layout is a persistent left Sidebar + Top Nav.",
+    "CRITICAL: Do NOT use complete `transparent` background in header, overlays, dropdowns, or any surface that has content under it.",
+    "CRITICAL: You have .js files not .tsx file, so build components in .js or .jsx, and omit TypeScript type annotations.",
+    "No pure black text on dark themes. Use text_primary (#FAFAFA).",
+    "Never use `transition: all` globally. Specify `transition-colors`, `transition-transform` etc. per element.",
+    "Do NOT center-align the app container globally. Left-align text by default.",
+    "All interactive and key informational elements MUST include a `data-testid` attribute."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. Avoid the 'AI slop' aesthetic. Make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur) where requested.",
+    "You MUST NOT apply universal transition (e.g., transition: all). Always add transitions for specific properties excluding transforms.",
+    "You MUST NOT center align the app container. This disrupts natural reading flow.",
+    "Always use modern button styles (sharp or slightly rounded for this enterprise app) with interaction animations & color relevant to the app style.",
+    "NEVER use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 for icons. Use Phosphor Icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Main agent relies on these image URLs. Missing categories = main agent will use placeholder text which is FORBIDDEN.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Use `sonner` for toasts, located in /app/src/components/ui/sonner.jsx or similar."
+  ]
+}
