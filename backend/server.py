@@ -1,89 +1,159 @@
-from fastapi import FastAPI, APIRouter
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
-import logging
-from pathlib import Path
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List
-import uuid
-from datetime import datetime, timezone
+"""GARUDA AI — FastAPI supervisor shim.
 
+The environment's supervisor is locked to `uvicorn server:app` on port 8001,
+but GARUDA AI's real backend is a Node.js + Express + TypeScript service
+living in /app/backend-node. This shim:
+
+  1. Boots the Node.js backend as a managed child process on internal port 4001.
+  2. Reverse-proxies every `/api/*` request from :8001 to the Node backend.
+  3. Passes through cookies, headers, query strings, and request bodies
+     transparently so JWT auth cookies work end-to-end.
+
+Nothing else in this file is business logic — all real code lives in
+/app/backend-node/src.
+"""
+from __future__ import annotations
+
+import asyncio
+import os
+import signal
+import subprocess
+from contextlib import asynccontextmanager
+from pathlib import Path
+
+import httpx
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request, Response
 
 ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+load_dotenv(ROOT_DIR / ".env")
 
-# MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+NODE_DIR = Path("/app/backend-node")
+NODE_PORT = int(os.environ.get("NODE_PORT", "4001"))
+NODE_URL = f"http://127.0.0.1:{NODE_PORT}"
 
-# Create the main app without a prefix
-app = FastAPI()
-
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
+_node_proc: subprocess.Popen | None = None
+_http_client: httpx.AsyncClient | None = None
 
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
-    
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+async def _wait_for_node(timeout: float = 60.0) -> None:
+    """Poll the node health endpoint until it responds or timeout."""
+    deadline = asyncio.get_event_loop().time() + timeout
+    async with httpx.AsyncClient(timeout=2.0) as client:
+        while asyncio.get_event_loop().time() < deadline:
+            try:
+                r = await client.get(f"{NODE_URL}/health")
+                if r.status_code == 200:
+                    return
+            except httpx.HTTPError:
+                pass
+            await asyncio.sleep(0.5)
+    raise RuntimeError("Node backend failed to start within timeout")
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
 
-# Add your routes to the router instead of directly to app
-@api_router.get("/")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global _node_proc, _http_client
+
+    # Ensure node dependencies are installed
+    if not (NODE_DIR / "node_modules").exists():
+        subprocess.run(["yarn", "install"], cwd=str(NODE_DIR), check=True)
+
+    env = {**os.environ, "NODE_PORT": str(NODE_PORT)}
+    _node_proc = subprocess.Popen(
+        ["yarn", "start"],
+        cwd=str(NODE_DIR),
+        env=env,
+        preexec_fn=os.setsid,
+    )
+    try:
+        await _wait_for_node()
+    except Exception as e:
+        print(f"[shim] Node backend failed to become healthy: {e}")
+    _http_client = httpx.AsyncClient(timeout=30.0, base_url=NODE_URL)
+
+    try:
+        yield
+    finally:
+        if _http_client is not None:
+            await _http_client.aclose()
+        if _node_proc is not None and _node_proc.poll() is None:
+            try:
+                os.killpg(os.getpgid(_node_proc.pid), signal.SIGTERM)
+                _node_proc.wait(timeout=10)
+            except Exception:
+                _node_proc.kill()
+
+
+app = FastAPI(lifespan=lifespan, title="GARUDA AI Shim")
+
+
+@app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"service": "garuda-shim", "backend": "node-express"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
-    
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
-    
-    return status_checks
+_HOP_BY_HOP = {
+    "connection",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "te",
+    "trailers",
+    "transfer-encoding",
+    "upgrade",
+    "host",
+    "content-length",
+}
 
-# Include the router in the main app
-app.include_router(api_router)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
+@app.api_route(
+    "/api/{path:path}",
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
 )
+async def proxy(path: str, request: Request):
+    assert _http_client is not None
+    body = await request.body()
+    fwd_headers = {
+        k: v for k, v in request.headers.items() if k.lower() not in _HOP_BY_HOP
+    }
+    try:
+        upstream = await _http_client.request(
+            request.method,
+            f"/api/{path}",
+            content=body if body else None,
+            headers=fwd_headers,
+            params=request.query_params,
+            cookies={},  # prevent httpx from persisting/leaking cookies across requests
+        )
+    except httpx.RequestError as e:
+        return Response(
+            content=f'{{"error":"upstream_unreachable","detail":"{e}"}}',
+            status_code=502,
+            media_type="application/json",
+        )
+    finally:
+        # Also clear the shared client's cookie jar so no state persists between requests.
+        try:
+            _http_client.cookies.clear()  # type: ignore[union-attr]
+        except Exception:
+            pass
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+    # Preserve multi-value headers (esp. multiple Set-Cookie) by building the
+    # response then appending headers using MutableHeaders.append which allows
+    # duplicate header names.
+    resp = Response(
+        content=upstream.content,
+        status_code=upstream.status_code,
+        media_type=upstream.headers.get("content-type"),
+    )
+    # Remove default headers that we'll set from upstream (content-type set via media_type).
+    del resp.headers["content-length"]
+    for k, v in upstream.headers.multi_items():
+        lk = k.lower()
+        if lk in _HOP_BY_HOP:
+            continue
+        if lk == "content-type":
+            continue  # already set via media_type
+        resp.raw_headers.append((lk.encode("latin-1"), v.encode("latin-1")))
+    return resp

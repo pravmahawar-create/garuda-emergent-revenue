@@ -82,7 +82,11 @@
     "@craco/craco": "7.1.0",
     "@emergentbase/visual-edits": "https://assets.emergent.sh/npm/emergentbase-visual-edits-1.0.13.tgz",
     "@eslint/js": "9.23.0",
+    "@phosphor-icons/react": "2.1.7",
     "@types/lodash": "4.17.24",
+    "@types/node": "20.14.11",
+    "@types/react": "19.0.7",
+    "@types/react-dom": "19.0.3",
     "autoprefixer": "10.4.20",
     "dotenv": "16.4.5",
     "eslint": "9.23.0",
@@ -92,7 +96,8 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "globals": "15.15.0",
     "postcss": "8.5.10",
-    "tailwindcss": "3.4.17"
+    "tailwindcss": "3.4.17",
+    "typescript": "5.5.4"
   },
   "resolutions": {
     "react-router": "7.15.0",

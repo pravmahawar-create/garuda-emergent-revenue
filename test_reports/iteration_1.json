@@ -1,0 +1,56 @@
+{
+  "summary": "Full backend + frontend regression for GARUDA AI. Wrote pytest suite (18 tests) covering auth, dashboard, opportunities, tasks, revenue, activity, notifications, settings. Ran Playwright flows for login, sidebar nav (all 8 links), opportunity/task/revenue CRUD, analytics, activity, notifications (mark-all + bell dropdown), settings profile + password, and logout with auth-guard. Uncovered and fixed TWO critical bugs in the FastAPI proxy shim (/app/backend/server.py): (1) shared httpx.AsyncClient cookie jar leaked auth cookies across requests, making /api/auth/me return admin data with no client cookie; (2) multiple Set-Cookie response headers were being merged into a single comma-joined header, breaking refresh_token propagation to clients. After the shim fixes: 18/18 backend tests pass and all frontend flows succeed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Dashboard KPI grid", "issues": ["Only 4 KPI cards rendered (Total Revenue, This Month, Pipeline Value, Conversion Rate). The 'kpi-open-tasks' data-testid promised in constants/testIds.ts is not present as a standalone card — Open Tasks value is folded into the Conversion Rate card's subtitle ('6 tasks · 0 overdue'). Either add a 5th card or remove the constant."]},
+      {"screen": "Dashboard charts (Recharts)", "issues": ["Console warns 'width(-1) and height(-1) of chart should be greater than 0' on initial mount for the revenue/pipeline charts; charts still render but this indicates a ResponsiveContainer sizing race with a min height/width missing on parent."]},
+      {"screen": "Top nav profile button", "issues": ["The profile trigger (avatar + user name + CaretDown) has no data-testid; tests must fall back to text selectors. Recommend adding NAV.profileMenu / top-nav-profile-menu testid on the button."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_garuda_backend.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Consider adding data-testid='top-nav-profile-menu' on the profile trigger button in TopNav.tsx for test stability.",
+    "Fix Recharts sizing warning by giving the container an explicit min-height so ResponsiveContainer sees positive initial dimensions (the -1/-1 warning is currently spammed on every dashboard/analytics load).",
+    "Decide on Open Tasks KPI: either surface a dedicated card with data-testid='kpi-open-tasks' or drop the constant from constants/testIds.ts to keep the contract clean.",
+    "Optional hardening: mark auth cookies Secure=true (currently secure:false in authController.setAuthCookies) and set SameSite=None when serving cross-site through the Emergent preview host."
+  ],
+  "critical_code_review_comments": [
+    "SHIM BUG (fixed): /app/backend/server.py used a shared httpx.AsyncClient without disabling the cookie jar, so cookies returned by Node in one request were auto-attached to ALL subsequent shim requests. This made /api/auth/me return admin data with no client cookie — full auth bypass. Fixed by passing cookies={} per request and clearing _http_client.cookies after each call.",
+    "SHIM BUG (fixed): the proxy collapsed upstream headers via a dict comprehension over upstream.headers.items(), losing duplicate Set-Cookie headers. Login only forwarded access_token; refresh_token was dropped. Fixed by iterating upstream.headers.multi_items() and appending to Response.raw_headers so both Set-Cookie headers survive.",
+    "auth cookies use secure:false and SameSite=Lax — acceptable for the preview host today, but this must move to secure:true + SameSite=None for any real cross-site deployment.",
+    "authController.login returns the user object directly (r.json()['email']), while common convention is {token, user}. Not a bug, just note that /api/auth/login and /api/auth/register both return the flat user shape.",
+    "opportunityController validation enforces stage in {prospect, qualified, proposal, negotiation, won, lost} and field name potentialValue (not value) — worth documenting in an API README for future consumers.",
+    "TopNav profile button lacks a data-testid — see action items."
+  ],
+  "updated_files": [
+    "/app/backend/server.py (proxy shim fixes: cookie leak + Set-Cookie multi-value forwarding)",
+    "/app/backend/tests/test_garuda_backend.py (new pytest suite)"
+  ],
+  "success_rate": {"backend": "100% (18/18)", "frontend": "100% of critical flows"},
+  "test_credentials": "admin@garuda.ai / Garuda@2026 (verified working; password reverted after change-password test)",
+  "seed_data_creation": "None new; used existing seeded 7 opportunities / 6 tasks / revenue records. All TEST_ / UI TEST_ records were deleted where possible, some UI-created UI TEST records remain (opportunity, task, revenue) — main agent may want to clear.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend pytest command: pytest /app/backend/tests/test_garuda_backend.py -v -n 0 (serial run required — TestSettings.test_change_password_correct_flow mutates admin password and reverts; running under xdist -n 2 caused cross-worker race). The FastAPI shim (/app/backend/server.py) was patched to (a) pass cookies={} per httpx request and clear the jar to prevent auth leak, and (b) forward multi-value Set-Cookie via raw_headers. If shim regressions reappear (e.g., single set-cookie in response, or /api/auth/me 200 with no cookie), those two areas are the RCA. Opportunity schema requires potentialValue (not value) and stage enum is prospect|qualified|proposal|negotiation|won|lost.",
+  "rca_of_the_issue": {
+    "issue_1_auth_bypass_on_/api/auth/me": {
+      "reproduction": "curl -s https://<host>/api/auth/me with no cookies returned 200 + admin user, but hitting the internal Node backend directly (http://127.0.0.1:4001/api/auth/me) correctly returned 401.",
+      "root_cause": "FastAPI shim used a single long-lived httpx.AsyncClient. httpx stores response cookies in the client-level cookie jar and re-sends them on every request. After the admin's first login through the shim, the shim itself was implicitly authenticated for all subsequent proxied requests.",
+      "mitigation": "In the proxy handler, pass cookies={} explicitly to _http_client.request() and clear _http_client.cookies after each request. Applied and verified with curl + pytest."
+    },
+    "issue_2_lost_set_cookie_headers": {
+      "reproduction": "Python requests.Session().post('/api/auth/login').cookies only contained access_token, not refresh_token, even though the Node backend set both.",
+      "root_cause": "The shim built the response headers via {k: v for k, v in upstream.headers.items()} — a plain dict, which cannot represent two Set-Cookie values, and Starlette's Response(headers=Mapping) similarly deduplicates.",
+      "mitigation": "Build the FastAPI Response and then append each upstream header via response.raw_headers using upstream.headers.multi_items(), preserving both Set-Cookie entries. Applied and verified with curl -v (two set-cookie: lines) and requests.Session.cookies containing both tokens."
+    }
+  }
+}
