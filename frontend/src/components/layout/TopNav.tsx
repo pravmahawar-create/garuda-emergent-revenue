@@ -141,6 +141,7 @@ export default function TopNav() {
 
       <div className="relative" ref={menuRef}>
         <button
+          data-testid="top-nav-profile-menu"
           onClick={() => setMenuOpen((o) => !o)}
           className="flex items-center gap-2 rounded-sm border border-gborder bg-elevated/60 px-2 py-1.5 text-sm text-text_primary hover:border-gold transition-colors"
         >

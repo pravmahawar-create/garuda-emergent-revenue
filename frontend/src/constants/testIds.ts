@@ -33,7 +33,6 @@ export const DASH = {
   kpiMtdRevenue: "kpi-mtd-revenue",
   kpiPipelineValue: "kpi-pipeline-value",
   kpiConversion: "kpi-conversion-rate",
-  kpiOpenTasks: "kpi-open-tasks",
   revenueChart: "dashboard-revenue-chart",
   pipelineSnapshot: "dashboard-pipeline-snapshot",
   recentActivity: "dashboard-recent-activity",
