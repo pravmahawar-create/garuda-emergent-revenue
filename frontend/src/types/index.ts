@@ -132,9 +132,44 @@ export interface DiscoveryCandidate {
   salaryText?: string;
   tags: string[];
   score: number;
+  opportunityChannel?: "garuda_deliverable" | "human_opportunity_only" | "no_verified_capability_match";
+  capabilityAssessment?: {
+    selfEarningEligible: boolean;
+    humanIdentityRequired: boolean;
+    decision: string;
+    matches: Array<{ capabilityId: string; universe: string; name: string; score: number }>;
+  };
+  verification?: { sourceVerified: boolean; originalLinkPresent: boolean; prohibitedContentClear: boolean; scamSignalsClear: boolean };
   status: "ranked" | "rejected" | "approved" | "dismissed";
   requiresFounderApproval: boolean;
   discoveredAt: string;
+}
+
+export interface RevenueExecutionMission {
+  id: string;
+  candidateId: string;
+  incomeGoalId: string;
+  missionKey: string;
+  status: "awaiting_bounded_scope" | "ready_for_founder_review" | "blocked";
+  opportunity: { title: string; company: string; source: string; originalUrl: string; score: number };
+  capability: { id: string; name: string; universe: string; readiness: string; matchScore: number; executionMode: string };
+  architecturePlan: { status: string; planId: string; tasks: Array<{ id: string; title: string; brain: string; deliverable: string }> };
+  executionPath: string[];
+  governance: {
+    boundedScopeRequiredBeforeEngineering: boolean;
+    automaticOutreachAllowed: boolean;
+    automaticApplicationAllowed: boolean;
+    automaticContractAcceptanceAllowed: boolean;
+    automaticSpendingAllowed: boolean;
+    automaticPaymentActionAllowed: boolean;
+    automaticDeliveryAllowed: boolean;
+    sourceApplyAllowed: boolean;
+    commitPushDeployAllowed: boolean;
+    founderApprovalRequiredForExternalActions: boolean;
+  };
+  missionHash: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Activity {

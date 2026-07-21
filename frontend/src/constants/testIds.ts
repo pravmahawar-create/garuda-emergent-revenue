@@ -20,6 +20,7 @@ export const NAV = {
   linkRevenue: "nav-link-revenue",
   linkSettlements: "nav-link-settlements",
   linkMissions: "nav-link-missions",
+  linkExecutionMissions: "nav-link-execution-missions",
   linkAnalytics: "nav-link-analytics",
   linkActivity: "nav-link-activity",
   linkNotifications: "nav-link-notifications",
@@ -28,6 +29,12 @@ export const NAV = {
   logoutBtn: "top-nav-logout",
   notificationBell: "top-nav-notification-bell",
   notificationDropdown: "top-nav-notification-dropdown",
+} as const;
+
+export const EXECUTION_MISSION = {
+  page: "execution-missions-page",
+  approvedCandidates: "execution-mission-approved-candidates",
+  missionList: "execution-mission-list",
 } as const;
 
 export const MISSION = {

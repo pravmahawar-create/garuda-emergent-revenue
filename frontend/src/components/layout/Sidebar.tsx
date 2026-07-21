@@ -12,6 +12,7 @@ import {
   CircleWavyCheck,
   Wallet,
   RocketLaunch,
+  FlowArrow,
 } from "@phosphor-icons/react";
 import { NAV } from "@/constants/testIds";
 
@@ -22,6 +23,7 @@ const items = [
   { to: "/revenue", label: "Earnings", icon: CurrencyCircleDollar, tid: NAV.linkRevenue },
   { to: "/settlements", label: "Settlements", icon: Wallet, tid: NAV.linkSettlements },
   { to: "/missions", label: "Income Mission", icon: RocketLaunch, tid: NAV.linkMissions },
+  { to: "/execution-missions", label: "Execution Missions", icon: FlowArrow, tid: NAV.linkExecutionMissions },
   { to: "/analytics", label: "Revenue Analytics", icon: ChartPieSlice, tid: NAV.linkAnalytics },
   { to: "/activity", label: "Activity Timeline", icon: ClockCounterClockwise, tid: NAV.linkActivity },
 ];

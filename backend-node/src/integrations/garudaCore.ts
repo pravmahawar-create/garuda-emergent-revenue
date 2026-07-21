@@ -64,3 +64,9 @@ export const decideDiscoveryCandidate = (id: string, status: 'approved' | 'dismi
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
   body: JSON.stringify({ status }),
 });
+export const listExecutionMissions = () => requestCore<unknown[]>('/api/discovery/execution-missions');
+export const createExecutionMission = (candidateId: string) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/execution-mission`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify({}),
+});

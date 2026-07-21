@@ -15,6 +15,7 @@ const pageTitles: Record<string, { eyebrow: string; title: string }> = {
   "/revenue": { eyebrow: "Earnings", title: "Revenue Records" },
   "/settlements": { eyebrow: "Payout", title: "Settlement Ledger" },
   "/missions": { eyebrow: "Command", title: "Income Mission" },
+  "/execution-missions": { eyebrow: "Work", title: "Execution Missions" },
   "/analytics": { eyebrow: "Insight", title: "Revenue Analytics" },
   "/activity": { eyebrow: "Signal", title: "Activity Timeline" },
   "/notifications": { eyebrow: "Inbox", title: "Notifications" },
