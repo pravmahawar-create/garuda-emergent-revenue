@@ -1,16 +1,18 @@
-# GARUDA AI — Future Integration Points
+# GARUDA AI — Integration Points
 
-This directory hosts intentionally-empty adapter stubs. Each file declares
-the contract the Revenue Universe expects from the corresponding subsystem
-so that when those subsystems come online, no core code has to change.
+This directory contains adapter contracts for GARUDA subsystems. Existing
+stubs remain available for Mother Brain, Knowledge Engine, Guardian, Creative
+Universe, and autonomous agents.
 
-- `motherBrain.ts` — orchestration + cross-module reasoning
-- `knowledgeEngine.ts` — long-term memory + retrieval
-- `guardian.ts` — safety / policy / risk scoring
-- `creativeUniverse.ts` — generative content pipelines
-- `agents.ts` — autonomous AI agent invocation registry
+The Emergent Revenue workspace remains the authenticated presentation layer. GARUDA Core remains the authoritative Revenue and Settlement engine.
 
-Adapters are invoked via a lightweight event bus (`services/eventBus.ts`)
-that today is a no-op. When a subsystem lands, wire it into these adapters
-and every emitted event will start being handled without touching the
-Revenue Universe module.
+Set `GARUDA_CORE_URL` in `backend/.env` (default: `http://127.0.0.1:3000`). The adapter exposes authenticated, read-only endpoints:
+
+- `GET /api/garuda-core/status`
+- `GET /api/garuda-core/revenue`
+- `GET /api/garuda-core/settlements`
+
+Settlement mutations and Founder approval headers are intentionally not proxied to the browser.
+
+The remaining adapters are invoked through `services/eventBus.ts` and can be
+activated without changing Revenue Universe domain modules.

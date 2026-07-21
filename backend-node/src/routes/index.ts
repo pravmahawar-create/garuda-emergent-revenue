@@ -7,6 +7,7 @@ import revenueRoutes from './revenueRoutes';
 import activityRoutes from './activityRoutes';
 import notificationRoutes from './notificationRoutes';
 import settingsRoutes from './settingsRoutes';
+import garudaCoreRoutes from './garudaCoreRoutes';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/revenue', revenueRoutes);
 router.use('/activity', activityRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/garuda-core', garudaCoreRoutes);
 
 export default router;

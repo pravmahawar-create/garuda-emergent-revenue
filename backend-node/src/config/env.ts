@@ -21,4 +21,5 @@ export const env = {
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || 'Garuda@2026',
   ADMIN_NAME: process.env.ADMIN_NAME || 'Garuda Operator',
   NODE_ENV: process.env.NODE_ENV || 'development',
+  GARUDA_CORE_URL: (process.env.GARUDA_CORE_URL || 'http://127.0.0.1:3000').replace(/\/$/, ''),
 };
