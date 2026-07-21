@@ -40,6 +40,8 @@ export const EXECUTION_MISSION = {
   evidence: "execution-mission-evidence",
   founderDecision: "execution-mission-founder-decision",
   decisionAudit: "execution-mission-decision-audit",
+  correctionForm: "execution-mission-correction-form",
+  revisionHistory: "execution-mission-revision-history",
 } as const;
 
 export const MISSION = {

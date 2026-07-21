@@ -17,5 +17,6 @@ router.post('/discovery/candidates/:id/execution-mission', ctrl.createExecutionM
 router.post('/execution-missions/:id/prepare', ctrl.prepareExecutionMission);
 router.post('/execution-missions/:id/decision', ctrl.decideExecutionMission);
 router.get('/execution-missions/:id/decisions', ctrl.executionMissionDecisions);
+router.post('/execution-missions/:id/resubmit', ctrl.resubmitExecutionMission);
 
 export default router;

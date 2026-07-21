@@ -154,10 +154,10 @@ export interface RevenueExecutionMission {
   opportunity: { title: string; company: string; source: string; originalUrl: string; score: number };
   capability: { id: string; name: string; universe: string; readiness: string; matchScore: number; executionMode: string };
   architecturePlan: { status: string; planId: string; tasks: Array<{ id: string; title: string; brain: string; deliverable: string }> };
-  boundedScope?: { deliverableType: string; requiredInputs: string[]; acceptanceCriteria: string[]; constraints: string[]; maxAttempts: number; approvedBy: string; approvedAt: string; scopeHash: string } | null;
+  boundedScope?: { deliverableType: string; requiredInputs: string[]; acceptanceCriteria: string[]; constraints: string[]; maxAttempts: number; revisionResponse?: string | null; approvedBy: string; approvedAt: string; scopeHash: string } | null;
   workPackages?: Array<{ id: string; order: number; title: string; brain: string; dependencies: string[]; deliverable: string; status: string; acceptanceCriteria: string[] }>;
   executionEvidence?: {
-    status: string; loopId: string; planId: string; reviewerVerdict: "APPROVE" | "REQUEST_CHANGES" | "REJECT" | null;
+    status: string; loopId: string; planId: string; revisionNumber: number; reviewerVerdict: "APPROVE" | "REQUEST_CHANGES" | "REJECT" | null;
     validationEvidence: Array<{ evidenceId: string; targetFile: string; status: string; exitCode: number; targetModified: boolean }>;
     artifactHashes: Array<{ path: string; kind: string; sha256: string }>;
     reviewerRequestedChanges: string[]; reviewerRejectReasons: string[]; sourceTreeModified: boolean;
@@ -178,6 +178,8 @@ export interface RevenueExecutionMission {
   };
   missionHash: string;
   founderDecision?: { decision: "approved" | "request_changes" | "rejected"; notes: string; decidedAt: string; decisionHash: string; evidenceHash: string } | null;
+  revisionNumber?: number;
+  revisionHistory?: Array<{ revisionNumber: number; scopeHash: string | null; loopId: string | null; finalPatchSha256: string | null; founderDecisionHash: string | null; founderNotes: string; responseToFounder: string; archivedAt: string }>;
   createdAt: string;
   updatedAt: string;
 }

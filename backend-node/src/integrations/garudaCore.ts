@@ -81,3 +81,8 @@ export const decideExecutionMission = (missionId: string, payload: unknown) => r
   body: JSON.stringify(payload),
 });
 export const listExecutionMissionDecisions = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/decisions`);
+export const resubmitExecutionMission = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/resubmit`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
