@@ -70,3 +70,8 @@ export const createExecutionMission = (candidateId: string) => requestCore<unkno
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
   body: JSON.stringify({}),
 });
+export const prepareExecutionMission = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/prepare`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});

@@ -150,10 +150,19 @@ export interface RevenueExecutionMission {
   candidateId: string;
   incomeGoalId: string;
   missionKey: string;
-  status: "awaiting_bounded_scope" | "ready_for_founder_review" | "blocked";
+  status: "awaiting_bounded_scope" | "ready_for_founder_review" | "changes_required" | "rejected" | "blocked";
   opportunity: { title: string; company: string; source: string; originalUrl: string; score: number };
   capability: { id: string; name: string; universe: string; readiness: string; matchScore: number; executionMode: string };
   architecturePlan: { status: string; planId: string; tasks: Array<{ id: string; title: string; brain: string; deliverable: string }> };
+  boundedScope?: { deliverableType: string; requiredInputs: string[]; acceptanceCriteria: string[]; constraints: string[]; maxAttempts: number; approvedBy: string; approvedAt: string; scopeHash: string } | null;
+  workPackages?: Array<{ id: string; order: number; title: string; brain: string; dependencies: string[]; deliverable: string; status: string; acceptanceCriteria: string[] }>;
+  executionEvidence?: {
+    status: string; loopId: string; planId: string; reviewerVerdict: "APPROVE" | "REQUEST_CHANGES" | "REJECT" | null;
+    validationEvidence: Array<{ evidenceId: string; targetFile: string; status: string; exitCode: number; targetModified: boolean }>;
+    artifactHashes: Array<{ path: string; kind: string; sha256: string }>;
+    reviewerRequestedChanges: string[]; reviewerRejectReasons: string[]; sourceTreeModified: boolean;
+    founderApprovalRequired: boolean; authorizesSourceApply: boolean; authorizesCommitPushDeploy: boolean; authorizesExternalAction: boolean;
+  } | null;
   executionPath: string[];
   governance: {
     boundedScopeRequiredBeforeEngineering: boolean;

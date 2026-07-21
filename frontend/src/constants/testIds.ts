@@ -35,6 +35,9 @@ export const EXECUTION_MISSION = {
   page: "execution-missions-page",
   approvedCandidates: "execution-mission-approved-candidates",
   missionList: "execution-mission-list",
+  scopeForm: "execution-mission-scope-form",
+  workPackages: "execution-mission-work-packages",
+  evidence: "execution-mission-evidence",
 } as const;
 
 export const MISSION = {

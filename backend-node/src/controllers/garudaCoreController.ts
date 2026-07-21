@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, getCoreStatus, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissions as listCoreExecutionMissions, listIncomeGoals, previewIncomeGoal, startIncomeGoal } from '../integrations/garudaCore';
+import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, getCoreStatus, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissions as listCoreExecutionMissions, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, startIncomeGoal } from '../integrations/garudaCore';
 import { ApiError } from '../utils/errors';
 
 export async function status(_req: Request, res: Response) {
@@ -48,4 +48,11 @@ export async function createExecutionMission(req: Request, res: Response) {
   if (req.user?.role !== 'admin') throw new ApiError(403, 'Founder admin approval is required', 'FOUNDER_APPROVAL_REQUIRED');
   if (req.body?.founderApproved !== true) throw new ApiError(400, 'Confirm founder approval before creating the execution mission', 'APPROVAL_CONFIRMATION_REQUIRED');
   res.status(201).json(await createCoreExecutionMission(req.params.id));
+}
+
+export async function prepareExecutionMission(req: Request, res: Response) {
+  if (req.user?.role !== 'admin') throw new ApiError(403, 'Founder admin approval is required', 'FOUNDER_APPROVAL_REQUIRED');
+  if (req.body?.founderApproved !== true) throw new ApiError(400, 'Confirm founder approval for the bounded scope', 'APPROVAL_CONFIRMATION_REQUIRED');
+  const { founderApproved: _confirmation, ...scope } = req.body || {};
+  res.json(await prepareCoreExecutionMission(req.params.id, scope));
 }
