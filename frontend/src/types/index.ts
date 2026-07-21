@@ -103,6 +103,21 @@ export interface SettlementLedger {
   updatedAt: string;
 }
 
+export type IncomeGoalStatus = "draft" | "active" | "paused" | "completed" | "cancelled";
+export interface IncomeGoal {
+  id: string;
+  title: string;
+  targetAmount: number;
+  achievedAmount: number;
+  currency: string;
+  status: IncomeGoalStatus;
+  deadline?: string;
+  milestones: Array<{ sequence: number; label: string; targetAmount: number; achievedAmount: number; status: "pending" | "in_progress" | "completed" }>;
+  missionPolicy: { targetIsMinimum: boolean; stopAtTarget: boolean; continuousDiscovery: boolean; pursueUpsideOpportunities: boolean; idleOnOpportunityGap: boolean; controlRoom: "mobile_first" };
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Activity {
   id: string;
   ownerId: string;

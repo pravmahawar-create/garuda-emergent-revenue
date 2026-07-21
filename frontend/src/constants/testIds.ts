@@ -19,6 +19,7 @@ export const NAV = {
   linkTasks: "nav-link-tasks",
   linkRevenue: "nav-link-revenue",
   linkSettlements: "nav-link-settlements",
+  linkMissions: "nav-link-missions",
   linkAnalytics: "nav-link-analytics",
   linkActivity: "nav-link-activity",
   linkNotifications: "nav-link-notifications",
@@ -27,6 +28,14 @@ export const NAV = {
   logoutBtn: "top-nav-logout",
   notificationBell: "top-nav-notification-bell",
   notificationDropdown: "top-nav-notification-dropdown",
+} as const;
+
+export const MISSION = {
+  page: "income-missions-page",
+  target: "income-mission-target",
+  approval: "income-mission-approval",
+  start: "income-mission-start",
+  list: "income-mission-list",
 } as const;
 
 export const SETTLEMENT = {

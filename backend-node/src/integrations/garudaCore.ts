@@ -13,11 +13,12 @@ export interface GarudaCoreStatus {
   status: string;
 }
 
-async function requestCore<T>(path: string): Promise<T> {
+async function requestCore<T>(path: string, init: RequestInit = {}): Promise<T> {
   let response: globalThis.Response;
   try {
     response = await fetch(`${env.GARUDA_CORE_URL}${path}`, {
-      headers: { accept: 'application/json' },
+      ...init,
+      headers: { accept: 'application/json', ...(init.headers || {}) },
       signal: AbortSignal.timeout(3000),
     });
   } catch {
@@ -46,3 +47,14 @@ export async function getCoreStatus(): Promise<GarudaCoreStatus> {
 
 export const listCoreRevenue = () => requestCore<unknown[]>('/api/revenue');
 export const listCoreSettlements = () => requestCore<unknown[]>('/api/revenue/settlements');
+export const listIncomeGoals = () => requestCore<unknown[]>('/api/income-goals');
+export const previewIncomeGoal = (payload: unknown) => requestCore<unknown>('/api/income-goals/preview', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify(payload),
+});
+export const startIncomeGoal = (payload: unknown) => requestCore<unknown>('/api/income-goals', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
