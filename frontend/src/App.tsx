@@ -8,6 +8,7 @@ import DashboardPage from "@/pages/DashboardPage";
 import OpportunitiesPage from "@/pages/OpportunitiesPage";
 import TasksPage from "@/pages/TasksPage";
 import RevenuePage from "@/pages/RevenuePage";
+import SettlementsPage from "@/pages/SettlementsPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ActivityPage from "@/pages/ActivityPage";
 import NotificationsPage from "@/pages/NotificationsPage";
@@ -57,6 +58,7 @@ export default function App() {
         <Route path="opportunities" element={<OpportunitiesPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="revenue" element={<RevenuePage />} />
+        <Route path="settlements" element={<SettlementsPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="notifications" element={<NotificationsPage />} />

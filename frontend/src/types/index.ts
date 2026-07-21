@@ -83,6 +83,26 @@ export interface RevenueRecord {
   updatedAt: string;
 }
 
+export type SettlementStatus = "pending" | "eligible" | "processing" | "settled" | "failed";
+
+export interface SettlementLedger {
+  id: string;
+  revenueRecordId: string;
+  grossAmount: number;
+  feeAmount: number;
+  netAmount: number;
+  feeRatePercent: number;
+  currency: string;
+  status: SettlementStatus;
+  payoutEligible: boolean;
+  eligibilityReasons: string[];
+  payoutReference?: string;
+  receiptReference?: string;
+  settledAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Activity {
   id: string;
   ownerId: string;

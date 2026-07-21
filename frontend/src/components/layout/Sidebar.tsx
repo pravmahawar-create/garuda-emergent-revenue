@@ -10,6 +10,7 @@ import {
   Bell,
   Gear,
   CircleWavyCheck,
+  Wallet,
 } from "@phosphor-icons/react";
 import { NAV } from "@/constants/testIds";
 
@@ -18,6 +19,7 @@ const items = [
   { to: "/opportunities", label: "Opportunities", icon: Target, tid: NAV.linkOpportunities },
   { to: "/tasks", label: "Task Manager", icon: ListChecks, tid: NAV.linkTasks },
   { to: "/revenue", label: "Earnings", icon: CurrencyCircleDollar, tid: NAV.linkRevenue },
+  { to: "/settlements", label: "Settlements", icon: Wallet, tid: NAV.linkSettlements },
   { to: "/analytics", label: "Revenue Analytics", icon: ChartPieSlice, tid: NAV.linkAnalytics },
   { to: "/activity", label: "Activity Timeline", icon: ClockCounterClockwise, tid: NAV.linkActivity },
 ];

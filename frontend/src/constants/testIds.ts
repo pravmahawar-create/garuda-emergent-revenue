@@ -18,6 +18,7 @@ export const NAV = {
   linkOpportunities: "nav-link-opportunities",
   linkTasks: "nav-link-tasks",
   linkRevenue: "nav-link-revenue",
+  linkSettlements: "nav-link-settlements",
   linkAnalytics: "nav-link-analytics",
   linkActivity: "nav-link-activity",
   linkNotifications: "nav-link-notifications",
@@ -26,6 +27,12 @@ export const NAV = {
   logoutBtn: "top-nav-logout",
   notificationBell: "top-nav-notification-bell",
   notificationDropdown: "top-nav-notification-dropdown",
+} as const;
+
+export const SETTLEMENT = {
+  page: "settlements-page",
+  coreStatus: "garuda-core-status",
+  table: "settlements-table",
 } as const;
 
 export const DASH = {
