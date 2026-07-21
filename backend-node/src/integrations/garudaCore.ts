@@ -58,3 +58,9 @@ export const startIncomeGoal = (payload: unknown) => requestCore<unknown>('/api/
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
   body: JSON.stringify(payload),
 });
+export const listDiscoveryCandidates = (status = 'ranked') => requestCore<unknown[]>(`/api/discovery/candidates?status=${encodeURIComponent(status)}`);
+export const decideDiscoveryCandidate = (id: string, status: 'approved' | 'dismissed') => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(id)}/decision`, {
+  method: 'PATCH',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify({ status }),
+});

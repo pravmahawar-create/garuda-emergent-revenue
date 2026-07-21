@@ -10,5 +10,7 @@ router.get('/settlements', ctrl.settlements);
 router.get('/income-goals', ctrl.incomeGoals);
 router.post('/income-goals/preview', ctrl.previewMission);
 router.post('/income-goals', ctrl.startMission);
+router.get('/discovery/candidates', ctrl.discoveryCandidates);
+router.patch('/discovery/candidates/:id/decision', ctrl.decideCandidate);
 
 export default router;

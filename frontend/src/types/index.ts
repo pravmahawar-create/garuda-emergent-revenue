@@ -118,6 +118,25 @@ export interface IncomeGoal {
   updatedAt: string;
 }
 
+export interface DiscoveryCandidate {
+  id: string;
+  missionId: string;
+  source: string;
+  title: string;
+  company: string;
+  category: string;
+  location: string;
+  url: string;
+  sourceAttribution: string;
+  publishedAt?: string;
+  salaryText?: string;
+  tags: string[];
+  score: number;
+  status: "ranked" | "rejected" | "approved" | "dismissed";
+  requiresFounderApproval: boolean;
+  discoveredAt: string;
+}
+
 export interface Activity {
   id: string;
   ownerId: string;

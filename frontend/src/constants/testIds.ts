@@ -36,6 +36,7 @@ export const MISSION = {
   approval: "income-mission-approval",
   start: "income-mission-start",
   list: "income-mission-list",
+  candidates: "income-mission-candidates",
 } as const;
 
 export const SETTLEMENT = {
