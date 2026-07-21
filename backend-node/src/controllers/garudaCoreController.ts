@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, getCoreStatus, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissions as listCoreExecutionMissions, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, startIncomeGoal } from '../integrations/garudaCore';
+import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, decideExecutionMission as decideCoreExecutionMission, getCoreStatus, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissionDecisions as listCoreExecutionMissionDecisions, listExecutionMissions as listCoreExecutionMissions, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, startIncomeGoal } from '../integrations/garudaCore';
 import { ApiError } from '../utils/errors';
 
 export async function status(_req: Request, res: Response) {
@@ -55,4 +55,15 @@ export async function prepareExecutionMission(req: Request, res: Response) {
   if (req.body?.founderApproved !== true) throw new ApiError(400, 'Confirm founder approval for the bounded scope', 'APPROVAL_CONFIRMATION_REQUIRED');
   const { founderApproved: _confirmation, ...scope } = req.body || {};
   res.json(await prepareCoreExecutionMission(req.params.id, scope));
+}
+
+export async function decideExecutionMission(req: Request, res: Response) {
+  if (req.user?.role !== 'admin') throw new ApiError(403, 'Founder admin approval is required', 'FOUNDER_APPROVAL_REQUIRED');
+  if (req.body?.founderApproved !== true) throw new ApiError(400, 'Confirm the Founder mission decision', 'APPROVAL_CONFIRMATION_REQUIRED');
+  if (!['approved', 'request_changes', 'rejected'].includes(req.body?.decision)) throw new ApiError(400, 'Invalid Founder mission decision', 'INVALID_DECISION');
+  res.json(await decideCoreExecutionMission(req.params.id, { decision: req.body.decision, notes: req.body.notes || '' }));
+}
+
+export async function executionMissionDecisions(req: Request, res: Response) {
+  res.json(await listCoreExecutionMissionDecisions(req.params.id));
 }

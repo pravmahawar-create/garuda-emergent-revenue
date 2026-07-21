@@ -38,6 +38,8 @@ export const EXECUTION_MISSION = {
   scopeForm: "execution-mission-scope-form",
   workPackages: "execution-mission-work-packages",
   evidence: "execution-mission-evidence",
+  founderDecision: "execution-mission-founder-decision",
+  decisionAudit: "execution-mission-decision-audit",
 } as const;
 
 export const MISSION = {

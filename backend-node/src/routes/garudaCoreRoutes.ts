@@ -15,5 +15,7 @@ router.patch('/discovery/candidates/:id/decision', ctrl.decideCandidate);
 router.get('/execution-missions', ctrl.executionMissions);
 router.post('/discovery/candidates/:id/execution-mission', ctrl.createExecutionMission);
 router.post('/execution-missions/:id/prepare', ctrl.prepareExecutionMission);
+router.post('/execution-missions/:id/decision', ctrl.decideExecutionMission);
+router.get('/execution-missions/:id/decisions', ctrl.executionMissionDecisions);
 
 export default router;

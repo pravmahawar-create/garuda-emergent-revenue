@@ -75,3 +75,9 @@ export const prepareExecutionMission = (missionId: string, payload: unknown) => 
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
   body: JSON.stringify(payload),
 });
+export const decideExecutionMission = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/decision`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
+export const listExecutionMissionDecisions = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/decisions`);

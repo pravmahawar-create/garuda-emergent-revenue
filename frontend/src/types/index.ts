@@ -150,7 +150,7 @@ export interface RevenueExecutionMission {
   candidateId: string;
   incomeGoalId: string;
   missionKey: string;
-  status: "awaiting_bounded_scope" | "ready_for_founder_review" | "changes_required" | "rejected" | "blocked";
+  status: "awaiting_bounded_scope" | "ready_for_founder_review" | "founder_approved" | "changes_required" | "rejected" | "blocked";
   opportunity: { title: string; company: string; source: string; originalUrl: string; score: number };
   capability: { id: string; name: string; universe: string; readiness: string; matchScore: number; executionMode: string };
   architecturePlan: { status: string; planId: string; tasks: Array<{ id: string; title: string; brain: string; deliverable: string }> };
@@ -177,8 +177,22 @@ export interface RevenueExecutionMission {
     founderApprovalRequiredForExternalActions: boolean;
   };
   missionHash: string;
+  founderDecision?: { decision: "approved" | "request_changes" | "rejected"; notes: string; decidedAt: string; decisionHash: string; evidenceHash: string } | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface RevenueMissionDecision {
+  id: string;
+  missionId: string;
+  evidenceHash: string;
+  decision: "approved" | "request_changes" | "rejected";
+  notes: string;
+  actor: "founder";
+  decidedAt: string;
+  previousDecisionHash?: string | null;
+  decisionHash: string;
+  governance: { authorizesSourceApply: false; authorizesCommitPushDeploy: false; authorizesExternalAction: false; actionSpecificApprovalStillRequired: true };
 }
 
 export interface Activity {

@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowSquareOut, CheckCircle, FlowArrow, Flask, LockKey, ShieldCheck } from "@phosphor-icons/react";
+import { ArrowSquareOut, ArrowsClockwise, CheckCircle, FlowArrow, Flask, LockKey, ShieldCheck, XCircle } from "@phosphor-icons/react";
 import { api, formatApiError } from "@/lib/api";
-import type { DiscoveryCandidate, RevenueExecutionMission } from "@/types";
+import type { DiscoveryCandidate, RevenueExecutionMission, RevenueMissionDecision } from "@/types";
 import { EXECUTION_MISSION } from "@/constants/testIds";
 
 function eligible(candidate: DiscoveryCandidate) {
@@ -13,6 +13,7 @@ function eligible(candidate: DiscoveryCandidate) {
 const statusLabel: Record<RevenueExecutionMission["status"], string> = {
   awaiting_bounded_scope: "Awaiting bounded scope",
   ready_for_founder_review: "Ready for Founder review",
+  founder_approved: "Founder approved",
   changes_required: "Changes required",
   rejected: "Rejected",
   blocked: "Blocked",
@@ -21,6 +22,28 @@ const statusLabel: Record<RevenueExecutionMission["status"], string> = {
 type ScopeDraft = { deliverableType: string; requiredInputs: string; acceptanceCriteria: string; constraints: string; confirmed: boolean };
 const emptyScope: ScopeDraft = { deliverableType: "", requiredInputs: "", acceptanceCriteria: "", constraints: "No external action without separate Founder approval", confirmed: false };
 const lines = (value: string) => value.split(/\r?\n|,/).map((item) => item.trim()).filter(Boolean);
+
+function MissionDecisionPanel({ mission }: { mission: RevenueExecutionMission }) {
+  const qc = useQueryClient();
+  const [notes, setNotes] = useState("");
+  const [confirmed, setConfirmed] = useState(false);
+  const audit = useQuery({ queryKey: ["garuda-execution-mission-decisions", mission.id], queryFn: async () => (await api.get<RevenueMissionDecision[]>(`/garuda-core/execution-missions/${mission.id}/decisions`)).data });
+  const decide = useMutation({
+    mutationFn: async (decision: RevenueMissionDecision["decision"]) => (await api.post(`/garuda-core/execution-missions/${mission.id}/decision`, { founderApproved: true, decision, notes: notes.trim() })).data,
+    onSuccess: () => {
+      setNotes(""); setConfirmed(false);
+      qc.invalidateQueries({ queryKey: ["garuda-execution-missions"] });
+      qc.invalidateQueries({ queryKey: ["garuda-execution-mission-decisions", mission.id] });
+    },
+  });
+  const canApprove = mission.status === "ready_for_founder_review" && mission.executionEvidence?.reviewerVerdict === "APPROVE";
+  const submit = (decision: RevenueMissionDecision["decision"]) => { if (confirmed && (decision === "approved" || notes.trim())) decide.mutate(decision); };
+  return <div data-testid={EXECUTION_MISSION.founderDecision} className="mt-5 border-t border-gborder pt-5">
+    {mission.status === "ready_for_founder_review" && <div className="space-y-3"><div><div className="g-label">Founder decision checkpoint</div><p className="mt-1 text-xs text-text_muted">This decision changes mission state only. It grants no external-action authority.</p></div><textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes required for changes or rejection" rows={3} className="w-full rounded-sm border border-gborder bg-elevated px-3 py-2 text-sm outline-none focus:border-gold"/><label className="flex items-start gap-2 text-xs text-text_secondary"><input type="checkbox" checked={confirmed} onChange={(e) => setConfirmed(e.target.checked)}/><span>I reviewed the evidence and confirm this Founder decision.</span></label><div className="grid gap-2 sm:grid-cols-3"><button disabled={!confirmed || !canApprove || decide.isPending} onClick={() => submit("approved")} className="flex items-center justify-center gap-2 rounded-sm bg-state-success px-3 py-2 text-xs font-semibold text-bg disabled:opacity-40"><CheckCircle size={16}/>Approve</button><button disabled={!confirmed || !notes.trim() || decide.isPending} onClick={() => submit("request_changes")} className="flex items-center justify-center gap-2 rounded-sm border border-state-warning/50 px-3 py-2 text-xs text-state-warning disabled:opacity-40"><ArrowsClockwise size={16}/>Changes</button><button disabled={!confirmed || !notes.trim() || decide.isPending} onClick={() => submit("rejected")} className="flex items-center justify-center gap-2 rounded-sm border border-state-danger/50 px-3 py-2 text-xs text-state-danger disabled:opacity-40"><XCircle size={16}/>Reject</button></div>{decide.error && <div className="text-sm text-state-danger">{formatApiError(decide.error)}</div>}</div>}
+    {mission.founderDecision && <div className="rounded-sm border border-gborder bg-elevated/50 p-3 text-xs"><div className="text-text_muted">Latest Founder decision</div><div className="mt-1 font-semibold uppercase text-text_primary">{mission.founderDecision.decision.replace("_", " ")}</div>{mission.founderDecision.notes && <div className="mt-2 text-text_secondary">{mission.founderDecision.notes}</div>}</div>}
+    <div data-testid={EXECUTION_MISSION.decisionAudit} className="mt-4"><div className="g-label">Immutable audit chain</div>{audit.isLoading && <div className="mt-2 text-xs text-text_muted">Loading audit…</div>}{audit.error && <div className="mt-2 text-xs text-state-danger">{formatApiError(audit.error)}</div>}<div className="mt-2 space-y-2">{(audit.data || []).map((item, index) => <div key={item.id} className="rounded-sm border border-gborder p-3 text-xs"><div className="flex items-center justify-between gap-2"><span className="uppercase text-text_primary">{item.decision.replace("_", " ")}</span><span className="text-text_muted">#{index + 1}</span></div><div className="mt-1 font-mono text-[10px] text-text_muted">{item.decisionHash.slice(0, 16)}…</div></div>)}</div></div>
+  </div>;
+}
 
 export default function ExecutionMissionsPage() {
   const qc = useQueryClient();
@@ -75,6 +98,7 @@ export default function ExecutionMissionsPage() {
         </div>}
         {(mission.workPackages || []).length > 0 && <div data-testid={EXECUTION_MISSION.workPackages} className="mt-5 border-t border-gborder pt-5"><div className="g-label">Work-package timeline</div><div className="mt-3 space-y-2">{mission.workPackages!.map((item) => <div key={item.id} className="flex gap-3 rounded-sm border border-gborder bg-elevated/50 p-3"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gold/50 text-xs text-gold">{item.order}</span><div><div className="text-sm text-text_primary">{item.title}</div><div className="mt-1 text-[10px] uppercase tracking-wider text-text_muted">{item.brain} · {item.deliverable}</div></div></div>)}</div></div>}
         {mission.executionEvidence && <div data-testid={EXECUTION_MISSION.evidence} className="mt-5 border-t border-gborder pt-5"><div className="flex items-center justify-between gap-3"><div className="g-label">Independent evidence</div><span className={`text-xs ${mission.executionEvidence.reviewerVerdict === "APPROVE" ? "text-state-success" : "text-state-warning"}`}>Reviewer: {mission.executionEvidence.reviewerVerdict || "Pending"}</span></div><div className="mt-3 grid grid-cols-2 gap-2 text-xs"><div className="rounded-sm border border-gborder p-3"><div className="text-text_muted">Tests passed</div><div className="mt-1 text-lg text-text_primary">{mission.executionEvidence.validationEvidence.filter((item) => item.status === "PASSED").length}</div></div><div className="rounded-sm border border-gborder p-3"><div className="text-text_muted">Artifacts verified</div><div className="mt-1 text-lg text-text_primary">{mission.executionEvidence.artifactHashes.length}</div></div></div><div className="mt-3 flex items-center gap-2 text-xs text-state-success"><ShieldCheck size={15}/>Source tree unchanged; Founder checkpoint preserved.</div></div>}
+        {mission.executionEvidence && <MissionDecisionPanel mission={mission}/>}
         {prepare.error && prepare.variables?.missionId === mission.id && <div className="mt-3 text-sm text-state-danger">{formatApiError(prepare.error)}</div>}
         <a href={mission.opportunity.originalUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm text-gold">Open verified source <ArrowSquareOut size={15}/></a>
       </article>; })}</div>
