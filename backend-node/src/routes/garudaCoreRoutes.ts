@@ -16,6 +16,8 @@ router.get('/work-intakes', ctrl.workIntakes);
 router.post('/discovery/candidates/:id/work-intake/handoff', ctrl.prepareWorkIntakeHandoff);
 router.post('/discovery/candidates/:id/work-intake/mission', ctrl.verifyWorkIntakeAndCreateMission);
 router.get('/acquisitions', ctrl.acquisitionCases);
+router.get('/revenue-attempts/status', ctrl.continuousRevenueAttempts);
+router.post('/revenue-attempts/run', ctrl.runContinuousRevenueAttemptCycle);
 router.post('/discovery/candidates/:id/acquisition/draft', ctrl.draftAcquisitionProposal);
 router.post('/discovery/candidates/:id/acquisition/handoff-approval', ctrl.approveAcquisitionHandoff);
 router.post('/discovery/candidates/:id/acquisition/submission', ctrl.recordAcquisitionSubmission);

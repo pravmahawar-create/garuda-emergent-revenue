@@ -59,6 +59,8 @@ export const startIncomeGoal = (payload: unknown) => requestCore<unknown>('/api/
   body: JSON.stringify(payload),
 });
 export const listDiscoveryCandidates = (status = 'ranked') => requestCore<unknown[]>(`/api/discovery/candidates?status=${encodeURIComponent(status)}`);
+export const listContinuousRevenueAttempts = () => requestCore<unknown[]>('/api/discovery/attempts/status');
+export const runContinuousRevenueAttemptCycle = () => requestCore<unknown>('/api/discovery/attempts/run', { method: 'POST' });
 export const decideDiscoveryCandidate = (id: string, status: 'approved' | 'dismissed') => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(id)}/decision`, {
   method: 'PATCH',
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },

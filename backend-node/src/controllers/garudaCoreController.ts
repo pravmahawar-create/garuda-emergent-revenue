@@ -7,6 +7,7 @@ import { getRazorpayTestReadiness as getCoreRazorpayTestReadiness, prepareRazorp
 import { listWorkIntakes as listCoreWorkIntakes, prepareWorkIntakeHandoff as prepareCoreWorkIntakeHandoff, verifyWorkIntakeAndCreateMission as verifyCoreWorkIntakeAndCreateMission } from '../integrations/garudaCore';
 import { approveFinalDelivery as approveCoreFinalDelivery, getPaymentAccountReadiness as getCorePaymentAccountReadiness, getProductionDelivery as getCoreProductionDelivery, prepareProductionDeliveryHandoff as prepareCoreProductionDeliveryHandoff, recordProductionClientAcceptance as recordCoreProductionClientAcceptance, recordProductionDeliveryReceipt as recordCoreProductionDeliveryReceipt, recordProductionQuality as recordCoreProductionQuality } from '../integrations/garudaCore';
 import { approveAcquisitionHandoff as approveCoreAcquisitionHandoff, draftAcquisitionProposal as draftCoreAcquisitionProposal, listAcquisitionCases as listCoreAcquisitionCases, recordAcquisitionResponse as recordCoreAcquisitionResponse, recordAcquisitionSubmission as recordCoreAcquisitionSubmission, verifyAcquisitionAwardAndCreateMission as verifyCoreAcquisitionAwardAndCreateMission } from '../integrations/garudaCore';
+import { listContinuousRevenueAttempts as listCoreContinuousRevenueAttempts, runContinuousRevenueAttemptCycle as runCoreContinuousRevenueAttemptCycle } from '../integrations/garudaCore';
 
 export async function status(_req: Request, res: Response) {
   res.json(await getCoreStatus());
@@ -68,6 +69,15 @@ export async function verifyWorkIntakeAndCreateMission(req: Request, res: Respon
 
 export async function acquisitionCases(_req: Request, res: Response) {
   res.json(await listCoreAcquisitionCases());
+}
+
+export async function continuousRevenueAttempts(_req: Request, res: Response) {
+  res.json(await listCoreContinuousRevenueAttempts());
+}
+
+export async function runContinuousRevenueAttemptCycle(req: Request, res: Response) {
+  requireFounder(req, 'Confirm Founder request for an immediate internal revenue-attempt cycle');
+  res.json(await runCoreContinuousRevenueAttemptCycle());
 }
 
 export async function draftAcquisitionProposal(req: Request, res: Response) {

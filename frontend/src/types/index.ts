@@ -142,7 +142,20 @@ export interface DiscoveryCandidate {
     decision: string;
     matches: Array<{ capabilityId: string; universe: string; name: string; score: number }>;
   };
-  verification?: { sourceVerified: boolean; originalLinkPresent: boolean; prohibitedContentClear: boolean; scamSignalsClear: boolean };
+  verification?: {
+    sourceVerified: boolean;
+    originalLinkPresent: boolean;
+    prohibitedContentClear: boolean;
+    scamSignalsClear: boolean;
+    listingSpecific: boolean;
+    listingKind: "specific_client_work" | "human_role_listing" | "talent_network_recruitment" | "generic_marketplace_page" | "unverified_general_listing";
+    directClientWorkEvidence: boolean;
+    humanIdentityGateClear: boolean;
+    garudaExecutionEligible: boolean;
+    sourceRecordHash: string;
+    verifiedAt?: string | null;
+    rejectionReasons: string[];
+  };
   status: "ranked" | "rejected" | "approved" | "dismissed";
   requiresFounderApproval: boolean;
   discoveredAt: string;
@@ -241,13 +254,13 @@ export interface RevenueWorkIntake {
 
 export interface RealWorkMissionResult { intake: RevenueWorkIntake; mission: RevenueExecutionMission }
 
-export type RevenueAcquisitionStatus = "proposal_drafted" | "changes_requested" | "handoff_ready" | "submitted" | "response_received" | "closed_no_award" | "mission_created";
+export type RevenueAcquisitionStatus = "proposal_drafted" | "changes_requested" | "source_invalidated" | "handoff_ready" | "submitted" | "response_received" | "closed_no_award" | "mission_created";
 export interface RevenueAcquisitionEvent {
   id: string;
   acquisitionCaseId: string;
   candidateId: string;
   sequence: number;
-  eventType: "proposal_drafted" | "founder_handoff_approved" | "submission_recorded" | "client_response_recorded" | "no_award_closed" | "award_verified" | "mission_created";
+  eventType: "proposal_drafted" | "source_invalidated" | "founder_handoff_approved" | "submission_recorded" | "client_response_recorded" | "no_award_closed" | "award_verified" | "mission_created";
   actor: "garuda" | "founder" | "client";
   details: Record<string, unknown>;
   previousEventHash?: string | null;
@@ -259,10 +272,10 @@ export interface RevenueAcquisitionCase {
   candidateId: string;
   incomeGoalId: string;
   status: RevenueAcquisitionStatus;
-  listing: { title: string; company: string; source: string; sourceAttribution: string; originalUrl: string; classification: "public_listing_not_contract" };
+  listing: { title: string; company: string; source: string; sourceAttribution: string; originalUrl: string; description?: string; publishedAt?: string | null; classification: "public_listing_not_contract"; listingKind: "specific_client_work"; sourceRecordHash: string; sourceVerifiedAt: string };
   capability: { id: string; name: string; universe: string; matchScore: number };
-  sourceRules: { discoveryUse: "public_lead_research_only"; applicationMode: "manual_handoff_only"; automatedSubmissionAllowed: false; platformTermsReviewRequired: true; authorizedEligibleAccountRequired: true; credentialsStoredByGaruda: false; publicListingConfirmsContract: false };
-  proposal: { proposalType: "application" | "quotation"; title: string; summary: string; deliverables: string[]; acceptanceCriteria: string[]; commercialOffer: { status: "client_confirmation_required" } | { amount: number; currency: string; deliveryDays: number }; requestedClientConfirmation: string[]; truthfulClaims: string[]; preparedAt: string; proposalHash: string };
+  sourceRules: { discoveryUse: "public_lead_research_only"; applicationMode: "manual_handoff_only"; automatedSubmissionAllowed: false; platformTermsReviewRequired: true; authorizedEligibleAccountRequired: true; credentialsStoredByGaruda: false; publicListingConfirmsContract: false; listingKind: string; sourceRecordHash: string; sourceVerifiedAt: string; sourceSnapshotMustRemainCurrent: true };
+  proposal: { proposalType: "application" | "quotation"; title: string; summary: string; deliverables: string[]; acceptanceCriteria: string[]; grounding: { listingKind: "specific_client_work"; sourceRecordHash: string; sourceVerifiedAt: string; originalUrl: string; sourceSummary: string; sourceRequirements: string[] }; commercialOffer: { status: "client_confirmation_required" } | { amount: number; currency: string; deliveryDays: number }; requestedClientConfirmation: string[]; truthfulClaims: string[]; preparedAt: string; proposalHash: string };
   founderApproval?: { decisionHash: string; approvedAt: string } | null;
   handoff?: { destination: string; preparedAt: string; handoffHash: string } | null;
   submissionReceipt?: { channel: string; provider: string; reference: string; evidence: string; submittedAt: string; receiptHash: string } | null;
@@ -273,6 +286,23 @@ export interface RevenueAcquisitionCase {
   auditTrail: RevenueAcquisitionEvent[];
 }
 export interface AcquisitionMissionResult extends RealWorkMissionResult { acquisition: RevenueAcquisitionCase }
+
+export interface RevenueAttemptStatus {
+  incomeGoalId: string;
+  title: string;
+  continuousDiscovery: boolean;
+  acquisitionLoop: {
+    status: "waiting" | "running" | "healthy" | "degraded";
+    lastCycleAt?: string | null;
+    nextCycleAt?: string | null;
+    approvedCandidatesScanned?: number;
+    internalDraftsPrepared?: number;
+    staleCasesInvalidated?: number;
+    blockedByTruthGate?: number;
+    lastError?: string;
+  };
+  governance: { internalPreparationContinuous: true; externalSubmissionAutomatic: false; actionSpecificFounderApprovalRequired: true; verifiedSourceRequired: true };
+}
 
 export interface RevenueTaskEvidence { kind: "artifact" | "test" | "review" | "reference"; label: string; reference: string; sha256?: string | null }
 export interface RevenueMissionTaskEvent { id?: string; missionId: string; taskId: string; fromStatus: string; toStatus: string; actor: "founder" | "garuda"; note: string; evidence: RevenueTaskEvidence[]; previousEventHash?: string | null; eventHash: string; createdAt: string }

@@ -49,6 +49,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     try {
       await api.post("/auth/logout");
+    } catch {
+      // Logout is intentionally idempotent. A missing/expired server session must
+      // still clear local auth state without crashing the React error overlay.
     } finally {
       setUser(null);
     }

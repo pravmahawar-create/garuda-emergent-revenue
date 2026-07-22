@@ -2,14 +2,14 @@ import React, { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowSquareOut, ArrowsClockwise, CheckCircle, FlowArrow, Flask, LockKey, ShieldCheck, XCircle } from "@phosphor-icons/react";
 import { api, formatApiError } from "@/lib/api";
-import type { DiscoveryCandidate, RealWorkMissionResult, RevenueAcquisitionCase, RevenueAutonomousTaskRun, RevenueConnector, RevenueConnectorDispatch, RevenueDeploymentReadiness, RevenueExecutionMission, RevenueExternalActionRequest, RevenueMissionDecision, RevenueMissionTaskEvent, RevenueMvpReadiness, RevenuePilotLedgerEntry, RevenueWorkIntake } from "@/types";
+import type { DiscoveryCandidate, RealWorkMissionResult, RevenueAcquisitionCase, RevenueAttemptStatus, RevenueAutonomousTaskRun, RevenueConnector, RevenueConnectorDispatch, RevenueDeploymentReadiness, RevenueExecutionMission, RevenueExternalActionRequest, RevenueMissionDecision, RevenueMissionTaskEvent, RevenueMvpReadiness, RevenuePilotLedgerEntry, RevenueWorkIntake } from "@/types";
 import { EXECUTION_MISSION } from "@/constants/testIds";
 import { ProductionDeliveryPanel } from "@/components/revenue/ProductionDeliveryPanel";
 import { AcquisitionBridgePanel } from "@/components/revenue/AcquisitionBridgePanel";
 
 function eligible(candidate: DiscoveryCandidate) {
   const verification = candidate.verification;
-  return candidate.status === "approved" && candidate.opportunityChannel === "garuda_deliverable" && candidate.capabilityAssessment?.selfEarningEligible === true && candidate.capabilityAssessment?.humanIdentityRequired !== true && verification?.sourceVerified === true && verification?.originalLinkPresent === true && verification?.prohibitedContentClear === true && verification?.scamSignalsClear === true;
+  return candidate.status === "approved" && candidate.opportunityChannel === "garuda_deliverable" && candidate.capabilityAssessment?.selfEarningEligible === true && candidate.capabilityAssessment?.humanIdentityRequired !== true && verification?.sourceVerified === true && verification?.originalLinkPresent === true && verification?.prohibitedContentClear === true && verification?.scamSignalsClear === true && verification?.listingSpecific === true && verification?.listingKind === "specific_client_work" && verification?.directClientWorkEvidence === true && verification?.humanIdentityGateClear === true && verification?.garudaExecutionEligible === true && /^[a-f0-9]{64}$/.test(verification?.sourceRecordHash || "");
 }
 
 const statusLabel: Record<RevenueExecutionMission["status"], string> = {
@@ -196,6 +196,15 @@ export default function ExecutionMissionsPage() {
   const approved = useQuery({ queryKey: ["garuda-discovery-candidates", "approved"], queryFn: async () => (await api.get<DiscoveryCandidate[]>("/garuda-core/discovery/candidates?status=approved")).data, refetchInterval: 30000 });
   const intakes = useQuery({ queryKey: ["garuda-work-intakes"], queryFn: async () => (await api.get<RevenueWorkIntake[]>("/garuda-core/work-intakes")).data, refetchInterval: 30000 });
   const acquisitions = useQuery({ queryKey: ["garuda-acquisition-cases"], queryFn: async () => (await api.get<RevenueAcquisitionCase[]>("/garuda-core/acquisitions")).data, refetchInterval: 30000 });
+  const attempts = useQuery({ queryKey: ["garuda-revenue-attempts"], queryFn: async () => (await api.get<RevenueAttemptStatus[]>("/garuda-core/revenue-attempts/status")).data, refetchInterval: 30000 });
+  const runAttempt = useMutation({
+    mutationFn: async () => (await api.post("/garuda-core/revenue-attempts/run", { founderApproved: true })).data,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["garuda-revenue-attempts"] });
+      qc.invalidateQueries({ queryKey: ["garuda-discovery-candidates", "approved"] });
+      qc.invalidateQueries({ queryKey: ["garuda-acquisition-cases"] });
+    },
+  });
   const prepare = useMutation({
     mutationFn: async ({ missionId, draft }: { missionId: string; draft: ScopeDraft }) => (await api.post<RevenueExecutionMission>(`/garuda-core/execution-missions/${missionId}/prepare`, {
       founderApproved: true,
@@ -216,6 +225,13 @@ export default function ExecutionMissionsPage() {
 
   return <div data-testid={EXECUTION_MISSION.page} className="animate-fade-in-up space-y-7">
     <div><div className="g-label">First real pilot · acquisition bridge</div><h1 className="mt-2 font-heading text-3xl tracking-tight sm:text-4xl">Lead to verified paid work</h1><p className="mt-2 max-w-3xl text-sm text-text_secondary">GARUDA drafts a grounded proposal, binds the exact Founder-approved handoff, tracks a real submission and client response, then creates work only from a verified award with accepted brief, price, deadline, and acceptance criteria.</p></div>
+
+    <section className="g-card border-gold/30 p-5 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4"><div><div className="g-label">Mother × Revenue Brain</div><h2 className="mt-1 font-heading text-xl">Continuous lawful attempt loop</h2><p className="mt-2 max-w-3xl text-xs text-text_muted">Discovery and grounded internal preparation continue automatically. Recruitment pages, stale listings, and human-profile roles are blocked. External submission remains action-specific and never runs from this loop.</p></div><button disabled={runAttempt.isPending} onClick={() => runAttempt.mutate()} className="rounded-sm border border-gold/50 px-4 py-2 text-xs text-gold disabled:opacity-40">{runAttempt.isPending ? "Verifying sources…" : "Run verified cycle now"}</button></div>
+      {attempts.error && <div className="mt-3 text-xs text-state-danger">{formatApiError(attempts.error)}</div>}
+      {runAttempt.error && <div className="mt-3 text-xs text-state-danger">{formatApiError(runAttempt.error)}</div>}
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{(attempts.data || []).map((item) => <React.Fragment key={item.incomeGoalId}><div className="rounded-sm border border-gborder p-3"><div className="text-[10px] uppercase tracking-wider text-text_muted">Loop status</div><div className={`mt-1 text-sm ${item.acquisitionLoop.status === "healthy" ? "text-state-success" : item.acquisitionLoop.status === "degraded" ? "text-state-danger" : "text-state-warning"}`}>{item.acquisitionLoop.status.toUpperCase()}</div></div><div className="rounded-sm border border-gborder p-3"><div className="text-[10px] uppercase tracking-wider text-text_muted">Approved scanned</div><div className="mt-1 text-lg text-text_primary">{item.acquisitionLoop.approvedCandidatesScanned || 0}</div></div><div className="rounded-sm border border-gborder p-3"><div className="text-[10px] uppercase tracking-wider text-text_muted">Drafts prepared</div><div className="mt-1 text-lg text-state-success">{item.acquisitionLoop.internalDraftsPrepared || 0}</div></div><div className="rounded-sm border border-gborder p-3"><div className="text-[10px] uppercase tracking-wider text-text_muted">Truth-gate blocks</div><div className="mt-1 text-lg text-state-warning">{item.acquisitionLoop.blockedByTruthGate || 0}</div></div></React.Fragment>)}</div>
+    </section>
 
     <section data-testid={EXECUTION_MISSION.missionList} className="space-y-4">
       <div><div className="g-label">Active work preparation</div><h2 className="mt-1 font-heading text-2xl">Governed mission chain</h2></div>
@@ -261,7 +277,7 @@ export default function ExecutionMissionsPage() {
         <div className="flex items-start justify-between gap-2"><div className="g-label">{candidate.sourceAttribution}</div><span className={`rounded-full border px-2 py-1 text-[10px] ${canCreate ? "border-state-warning/40 text-state-warning" : "border-state-danger/40 text-state-danger"}`}>{canCreate ? "Eligible lead — not contract" : "Blocked"}</span></div>
         <h3 className="mt-3 font-heading text-lg">{candidate.title}</h3><div className="mt-1 text-sm text-text_secondary">{candidate.company} · Score {candidate.score}</div>
         <div className="mt-3 text-xs text-text_muted">{candidate.capabilityAssessment?.matches?.[0]?.name || candidate.capabilityAssessment?.decision || "No verified capability match"}</div>
-        {canCreate ? <AcquisitionBridgePanel candidate={candidate} acquisition={acquisitionByCandidate.get(candidate.id)} existingMission={alreadyCreated}/> : <div className="mt-4 rounded-sm border border-state-danger/40 p-3 text-xs text-state-danger">Capability or listing verification is incomplete. Acquisition actions remain locked.</div>}
+        {canCreate ? <AcquisitionBridgePanel candidate={candidate} acquisition={acquisitionByCandidate.get(candidate.id)} existingMission={alreadyCreated}/> : <div className="mt-4 rounded-sm border border-state-danger/40 p-3 text-xs text-state-danger"><div>Acquisition locked: {candidate.verification?.listingKind?.replaceAll("_", " ") || candidate.capabilityAssessment?.decision || "source truth incomplete"}.</div>{candidate.verification?.rejectionReasons?.length ? <div className="mt-2 text-[10px] text-text_muted">{candidate.verification.rejectionReasons.join(" · ")}</div> : null}{acquisitionByCandidate.get(candidate.id)?.status === "source_invalidated" ? <div className="mt-2 text-state-warning">Earlier proposal was revoked because its source snapshot is no longer eligible.</div> : null}</div>}
       </article>; })}</div>
     </section>
   </div>;
