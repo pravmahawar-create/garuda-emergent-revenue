@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { completeExternalActionRequest as completeCoreExternalActionRequest, createExecutionMission as createCoreExecutionMission, createExternalActionRequest as createCoreExternalActionRequest, decideDiscoveryCandidate, decideExecutionMission as decideCoreExecutionMission, decideExternalActionRequest as decideCoreExternalActionRequest, getCoreStatus, getRevenueMvpReadiness as getCoreRevenueMvpReadiness, listAutonomousTaskRuns as listCoreAutonomousTaskRuns, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissionDecisions as listCoreExecutionMissionDecisions, listExecutionMissions as listCoreExecutionMissions, listExecutionTaskEvents as listCoreExecutionTaskEvents, listExternalActionRequests as listCoreExternalActionRequests, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, resubmitExecutionMission as resubmitCoreExecutionMission, runAutonomousExecutionTask as runCoreAutonomousExecutionTask, startIncomeGoal, transitionExecutionTask as transitionCoreExecutionTask } from '../integrations/garudaCore';
 import { ApiError } from '../utils/errors';
+import { dispatchExternalAction as dispatchCoreExternalAction, listConnectorDispatches as listCoreConnectorDispatches, listRevenueConnectors as listCoreRevenueConnectors } from '../integrations/garudaCore';
 
 export async function status(_req: Request, res: Response) {
   res.json(await getCoreStatus());
@@ -102,3 +103,6 @@ export async function createExternalActionRequest(req: Request, res: Response) {
 export async function decideExternalActionRequest(req: Request, res: Response) { requireFounder(req, 'Confirm this action-specific Founder decision'); const { founderApproved: _confirmation, ...payload } = req.body || {}; res.json(await decideCoreExternalActionRequest(req.params.id, req.params.requestId, payload)); }
 export async function completeExternalActionRequest(req: Request, res: Response) { requireFounder(req, 'Confirm the external completion receipt'); const { founderApproved: _confirmation, ...payload } = req.body || {}; res.json(await completeCoreExternalActionRequest(req.params.id, req.params.requestId, payload)); }
 export async function revenueMvpReadiness(req: Request, res: Response) { res.json(await getCoreRevenueMvpReadiness(req.params.id)); }
+export async function revenueConnectors(_req: Request, res: Response) { res.json(await listCoreRevenueConnectors()); }
+export async function dispatchExternalAction(req: Request, res: Response) { requireFounder(req, 'Confirm Founder approval for connector validation'); res.json(await dispatchCoreExternalAction(req.params.id, req.params.requestId, { connectorId: req.body.connectorId, dryRun: true })); }
+export async function connectorDispatches(req: Request, res: Response) { res.json(await listCoreConnectorDispatches(req.params.id, req.params.requestId)); }
