@@ -75,6 +75,32 @@ export const verifyWorkIntakeAndCreateMission = (candidateId: string, payload: u
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
   body: JSON.stringify(payload),
 });
+export const listAcquisitionCases = () => requestCore<unknown[]>('/api/discovery/acquisitions');
+export const draftAcquisitionProposal = (candidateId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/acquisition/draft`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify(payload),
+});
+export const approveAcquisitionHandoff = (candidateId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/acquisition/handoff-approval`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
+export const recordAcquisitionSubmission = (candidateId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/acquisition/submission`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
+export const recordAcquisitionResponse = (candidateId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/acquisition/response`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
+export const verifyAcquisitionAwardAndCreateMission = (candidateId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/acquisition/award-mission`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
 export const listExecutionMissions = () => requestCore<unknown[]>('/api/discovery/execution-missions');
 export const createExecutionMission = (candidateId: string) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/execution-mission`, {
   method: 'POST',

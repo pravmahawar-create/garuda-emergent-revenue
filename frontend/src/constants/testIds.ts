@@ -60,6 +60,13 @@ export const EXECUTION_MISSION = {
   clientAcceptance: "production-delivery-client-acceptance",
   paymentReadiness: "production-payment-readiness",
   productionAudit: "production-delivery-audit",
+  acquisitionBridge: "real-pilot-acquisition-bridge",
+  acquisitionDraft: "real-pilot-acquisition-draft",
+  acquisitionApproval: "real-pilot-acquisition-approval",
+  acquisitionSubmission: "real-pilot-acquisition-submission",
+  acquisitionResponse: "real-pilot-acquisition-response",
+  acquisitionAward: "real-pilot-acquisition-award",
+  acquisitionAudit: "real-pilot-acquisition-audit",
 } as const;
 
 export const MISSION = {

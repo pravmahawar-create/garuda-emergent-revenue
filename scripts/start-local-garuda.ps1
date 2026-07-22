@@ -42,7 +42,7 @@ function Start-GarudaProcess([string]$Name, [string]$WorkingDirectory, [string]$
 
 $core = Start-GarudaProcess "core" $coreRoot "npm start"
 $backend = Start-GarudaProcess "backend" $backendRoot "npm start"
-$frontend = Start-GarudaProcess "frontend" $frontendRoot "`$env:PORT='3001'; `$env:BROWSER='none'; `$env:REACT_APP_BACKEND_URL='http://127.0.0.1:4001'; npm start"
+$frontend = Start-GarudaProcess "frontend" $frontendRoot "`$env:PORT='3001'; `$env:BROWSER='none'; `$env:REACT_APP_BACKEND_URL='http://localhost:4001'; npm start"
 @{ core = $core.Id; backend = $backend.Id; frontend = $frontend.Id; startedAt = (Get-Date).ToString("o") } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $runtimeRoot "pids.json")
 
 $deadline = (Get-Date).AddSeconds(90)

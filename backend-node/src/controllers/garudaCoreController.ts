@@ -6,6 +6,7 @@ import { getDeploymentReadiness as getCoreDeploymentReadiness, listPilotLedger a
 import { getRazorpayTestReadiness as getCoreRazorpayTestReadiness, prepareRazorpayTestLink as prepareCoreRazorpayTestLink, runAutonomousExecutionMission as runCoreAutonomousExecutionMission } from '../integrations/garudaCore';
 import { listWorkIntakes as listCoreWorkIntakes, prepareWorkIntakeHandoff as prepareCoreWorkIntakeHandoff, verifyWorkIntakeAndCreateMission as verifyCoreWorkIntakeAndCreateMission } from '../integrations/garudaCore';
 import { approveFinalDelivery as approveCoreFinalDelivery, getPaymentAccountReadiness as getCorePaymentAccountReadiness, getProductionDelivery as getCoreProductionDelivery, prepareProductionDeliveryHandoff as prepareCoreProductionDeliveryHandoff, recordProductionClientAcceptance as recordCoreProductionClientAcceptance, recordProductionDeliveryReceipt as recordCoreProductionDeliveryReceipt, recordProductionQuality as recordCoreProductionQuality } from '../integrations/garudaCore';
+import { approveAcquisitionHandoff as approveCoreAcquisitionHandoff, draftAcquisitionProposal as draftCoreAcquisitionProposal, listAcquisitionCases as listCoreAcquisitionCases, recordAcquisitionResponse as recordCoreAcquisitionResponse, recordAcquisitionSubmission as recordCoreAcquisitionSubmission, verifyAcquisitionAwardAndCreateMission as verifyCoreAcquisitionAwardAndCreateMission } from '../integrations/garudaCore';
 
 export async function status(_req: Request, res: Response) {
   res.json(await getCoreStatus());
@@ -63,6 +64,38 @@ export async function verifyWorkIntakeAndCreateMission(req: Request, res: Respon
   requireFounder(req, 'Confirm Founder verification of the real client engagement and terms');
   const { founderApproved: _confirmation, ...payload } = req.body || {};
   res.status(201).json(await verifyCoreWorkIntakeAndCreateMission(req.params.id, payload));
+}
+
+export async function acquisitionCases(_req: Request, res: Response) {
+  res.json(await listCoreAcquisitionCases());
+}
+
+export async function draftAcquisitionProposal(req: Request, res: Response) {
+  res.status(201).json(await draftCoreAcquisitionProposal(req.params.id, req.body || {}));
+}
+
+export async function approveAcquisitionHandoff(req: Request, res: Response) {
+  requireFounder(req, 'Confirm Founder approval for this exact proposal handoff');
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  res.json(await approveCoreAcquisitionHandoff(req.params.id, payload));
+}
+
+export async function recordAcquisitionSubmission(req: Request, res: Response) {
+  requireFounder(req, 'Confirm that the approved proposal was actually submitted through an authorized eligible account');
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  res.json(await recordCoreAcquisitionSubmission(req.params.id, payload));
+}
+
+export async function recordAcquisitionResponse(req: Request, res: Response) {
+  requireFounder(req, 'Confirm review of this genuine client response evidence');
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  res.json(await recordCoreAcquisitionResponse(req.params.id, payload));
+}
+
+export async function verifyAcquisitionAwardAndCreateMission(req: Request, res: Response) {
+  requireFounder(req, 'Confirm the genuine client award and every accepted work term');
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  res.status(201).json(await verifyCoreAcquisitionAwardAndCreateMission(req.params.id, payload));
 }
 
 export async function createExecutionMission(req: Request, res: Response) {
