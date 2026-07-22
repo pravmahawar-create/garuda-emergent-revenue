@@ -20,5 +20,7 @@ router.get('/execution-missions/:id/decisions', ctrl.executionMissionDecisions);
 router.post('/execution-missions/:id/resubmit', ctrl.resubmitExecutionMission);
 router.patch('/execution-missions/:id/tasks/:taskId', ctrl.transitionExecutionTask);
 router.get('/execution-missions/:id/task-events', ctrl.executionTaskEvents);
+router.post('/execution-missions/:id/auto-run', ctrl.runAutonomousExecutionTask);
+router.get('/execution-missions/:id/task-runs', ctrl.autonomousTaskRuns);
 
 export default router;

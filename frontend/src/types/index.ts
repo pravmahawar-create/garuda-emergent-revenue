@@ -187,6 +187,7 @@ export interface RevenueExecutionMission {
 
 export interface RevenueTaskEvidence { kind: "artifact" | "test" | "review" | "reference"; label: string; reference: string; sha256?: string | null }
 export interface RevenueMissionTaskEvent { id?: string; missionId: string; taskId: string; fromStatus: string; toStatus: string; actor: "founder" | "garuda"; note: string; evidence: RevenueTaskEvidence[]; previousEventHash?: string | null; eventHash: string; createdAt: string }
+export interface RevenueAutonomousTaskRun { id?: string; missionId: string; taskId: string; status: "completed" | "blocked"; attempts: number; evidence: RevenueTaskEvidence[]; errors: string[]; eventHashes: string[]; previousRunHash?: string | null; runHash: string; createdAt: string; governance: { internalOnly: true; externalActionsAuthorized: false; sourceGitDeployAuthorized: false; spendingPaymentAuthorized: false } }
 
 export interface RevenueMissionDecision {
   id: string;

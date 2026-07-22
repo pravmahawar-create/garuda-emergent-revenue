@@ -44,6 +44,8 @@ export const EXECUTION_MISSION = {
   revisionHistory: "execution-mission-revision-history",
   deliverableWorkspace: "execution-mission-deliverable-workspace",
   taskEventAudit: "execution-mission-task-event-audit",
+  autonomousRunner: "execution-mission-autonomous-runner",
+  autonomousRunAudit: "execution-mission-autonomous-run-audit",
 } as const;
 
 export const MISSION = {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, decideExecutionMission as decideCoreExecutionMission, getCoreStatus, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissionDecisions as listCoreExecutionMissionDecisions, listExecutionMissions as listCoreExecutionMissions, listExecutionTaskEvents as listCoreExecutionTaskEvents, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, resubmitExecutionMission as resubmitCoreExecutionMission, startIncomeGoal, transitionExecutionTask as transitionCoreExecutionTask } from '../integrations/garudaCore';
+import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, decideExecutionMission as decideCoreExecutionMission, getCoreStatus, listAutonomousTaskRuns as listCoreAutonomousTaskRuns, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissionDecisions as listCoreExecutionMissionDecisions, listExecutionMissions as listCoreExecutionMissions, listExecutionTaskEvents as listCoreExecutionTaskEvents, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, resubmitExecutionMission as resubmitCoreExecutionMission, runAutonomousExecutionTask as runCoreAutonomousExecutionTask, startIncomeGoal, transitionExecutionTask as transitionCoreExecutionTask } from '../integrations/garudaCore';
 import { ApiError } from '../utils/errors';
 
 export async function status(_req: Request, res: Response) {
@@ -84,4 +84,14 @@ export async function transitionExecutionTask(req: Request, res: Response) {
 
 export async function executionTaskEvents(req: Request, res: Response) {
   res.json(await listCoreExecutionTaskEvents(req.params.id));
+}
+
+export async function runAutonomousExecutionTask(req: Request, res: Response) {
+  if (req.user?.role !== 'admin') throw new ApiError(403, 'Founder admin approval is required', 'FOUNDER_APPROVAL_REQUIRED');
+  if (req.body?.founderApproved !== true) throw new ApiError(400, 'Confirm Founder approval for the internal task run', 'APPROVAL_CONFIRMATION_REQUIRED');
+  res.json(await runCoreAutonomousExecutionTask(req.params.id, { maxAttempts: 3 }));
+}
+
+export async function autonomousTaskRuns(req: Request, res: Response) {
+  res.json(await listCoreAutonomousTaskRuns(req.params.id));
 }

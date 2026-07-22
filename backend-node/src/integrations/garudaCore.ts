@@ -92,3 +92,9 @@ export const transitionExecutionTask = (missionId: string, taskId: string, paylo
   body: JSON.stringify(payload),
 });
 export const listExecutionTaskEvents = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/task-events`);
+export const runAutonomousExecutionTask = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/auto-run`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
+export const listAutonomousTaskRuns = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/task-runs`);
