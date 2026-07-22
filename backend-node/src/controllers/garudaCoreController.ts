@@ -8,6 +8,7 @@ import { listWorkIntakes as listCoreWorkIntakes, prepareWorkIntakeHandoff as pre
 import { approveFinalDelivery as approveCoreFinalDelivery, getPaymentAccountReadiness as getCorePaymentAccountReadiness, getProductionDelivery as getCoreProductionDelivery, prepareProductionDeliveryHandoff as prepareCoreProductionDeliveryHandoff, recordProductionClientAcceptance as recordCoreProductionClientAcceptance, recordProductionDeliveryReceipt as recordCoreProductionDeliveryReceipt, recordProductionQuality as recordCoreProductionQuality } from '../integrations/garudaCore';
 import { approveAcquisitionHandoff as approveCoreAcquisitionHandoff, draftAcquisitionProposal as draftCoreAcquisitionProposal, listAcquisitionCases as listCoreAcquisitionCases, recordAcquisitionResponse as recordCoreAcquisitionResponse, recordAcquisitionSubmission as recordCoreAcquisitionSubmission, verifyAcquisitionAwardAndCreateMission as verifyCoreAcquisitionAwardAndCreateMission } from '../integrations/garudaCore';
 import { listContinuousRevenueAttempts as listCoreContinuousRevenueAttempts, runContinuousRevenueAttemptCycle as runCoreContinuousRevenueAttemptCycle } from '../integrations/garudaCore';
+import { approveAffiliateHandoff as approveCoreAffiliateHandoff, createAffiliateOffer as createCoreAffiliateOffer, draftAffiliateCampaign as draftCoreAffiliateCampaign, getAffiliateCase as getCoreAffiliateCase, getAffiliatePilotStatus as getCoreAffiliatePilotStatus, listAffiliateCases as listCoreAffiliateCases, listAffiliateEvents as listCoreAffiliateEvents, recordAffiliateConversion as recordCoreAffiliateConversion, recordAffiliatePayment as recordCoreAffiliatePayment, recordAffiliatePublication as recordCoreAffiliatePublication, verifyAffiliateCommission as verifyCoreAffiliateCommission } from '../integrations/garudaCore';
 
 export async function status(_req: Request, res: Response) {
   res.json(await getCoreStatus());
@@ -79,6 +80,23 @@ export async function runContinuousRevenueAttemptCycle(req: Request, res: Respon
   requireFounder(req, 'Confirm Founder request for an immediate internal revenue-attempt cycle');
   res.json(await runCoreContinuousRevenueAttemptCycle());
 }
+
+export async function affiliatePilotStatus(_req: Request, res: Response) { res.json(await getCoreAffiliatePilotStatus()); }
+export async function affiliateCases(_req: Request, res: Response) { res.json(await listCoreAffiliateCases()); }
+export async function affiliateCase(req: Request, res: Response) { res.json(await getCoreAffiliateCase(req.params.id)); }
+export async function affiliateEvents(req: Request, res: Response) { res.json(await listCoreAffiliateEvents(req.params.id)); }
+function affiliateFounderPayload(req: Request, message: string) {
+  requireFounder(req, message);
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  return payload;
+}
+export async function createAffiliateOffer(req: Request, res: Response) { res.status(201).json(await createCoreAffiliateOffer(affiliateFounderPayload(req, 'Confirm exact verified affiliate offer intake'))); }
+export async function draftAffiliateCampaign(req: Request, res: Response) { res.status(201).json(await draftCoreAffiliateCampaign(req.params.id, affiliateFounderPayload(req, 'Confirm compliant internal campaign drafting'))); }
+export async function approveAffiliateHandoff(req: Request, res: Response) { res.json(await approveCoreAffiliateHandoff(req.params.id, affiliateFounderPayload(req, 'Confirm exact campaign handoff approval'))); }
+export async function recordAffiliatePublication(req: Request, res: Response) { res.json(await recordCoreAffiliatePublication(req.params.id, affiliateFounderPayload(req, 'Confirm genuine authorized publication receipt'))); }
+export async function recordAffiliateConversion(req: Request, res: Response) { res.json(await recordCoreAffiliateConversion(req.params.id, affiliateFounderPayload(req, 'Confirm genuine provider-attributed conversion evidence'))); }
+export async function verifyAffiliateCommission(req: Request, res: Response) { res.json(await verifyCoreAffiliateCommission(req.params.id, affiliateFounderPayload(req, 'Confirm genuine provider commission evidence'))); }
+export async function recordAffiliatePayment(req: Request, res: Response) { res.json(await recordCoreAffiliatePayment(req.params.id, affiliateFounderPayload(req, 'Confirm genuinely received matching payment'))); }
 
 export async function draftAcquisitionProposal(req: Request, res: Response) {
   res.status(201).json(await draftCoreAcquisitionProposal(req.params.id, req.body || {}));

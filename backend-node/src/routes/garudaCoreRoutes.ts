@@ -18,6 +18,17 @@ router.post('/discovery/candidates/:id/work-intake/mission', ctrl.verifyWorkInta
 router.get('/acquisitions', ctrl.acquisitionCases);
 router.get('/revenue-attempts/status', ctrl.continuousRevenueAttempts);
 router.post('/revenue-attempts/run', ctrl.runContinuousRevenueAttemptCycle);
+router.get('/affiliate-pilot/status', ctrl.affiliatePilotStatus);
+router.get('/affiliate-pilot/cases', ctrl.affiliateCases);
+router.post('/affiliate-pilot/offers', ctrl.createAffiliateOffer);
+router.get('/affiliate-pilot/cases/:id', ctrl.affiliateCase);
+router.get('/affiliate-pilot/cases/:id/events', ctrl.affiliateEvents);
+router.post('/affiliate-pilot/cases/:id/campaign', ctrl.draftAffiliateCampaign);
+router.post('/affiliate-pilot/cases/:id/handoff', ctrl.approveAffiliateHandoff);
+router.post('/affiliate-pilot/cases/:id/publication', ctrl.recordAffiliatePublication);
+router.post('/affiliate-pilot/cases/:id/conversion', ctrl.recordAffiliateConversion);
+router.post('/affiliate-pilot/cases/:id/commission', ctrl.verifyAffiliateCommission);
+router.post('/affiliate-pilot/cases/:id/payment', ctrl.recordAffiliatePayment);
 router.post('/discovery/candidates/:id/acquisition/draft', ctrl.draftAcquisitionProposal);
 router.post('/discovery/candidates/:id/acquisition/handoff-approval', ctrl.approveAcquisitionHandoff);
 router.post('/discovery/candidates/:id/acquisition/submission', ctrl.recordAcquisitionSubmission);

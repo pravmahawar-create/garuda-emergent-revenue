@@ -21,6 +21,7 @@ export const NAV = {
   linkSettlements: "nav-link-settlements",
   linkMissions: "nav-link-missions",
   linkExecutionMissions: "nav-link-execution-missions",
+  linkAffiliatePilot: "nav-link-affiliate-pilot",
   linkAnalytics: "nav-link-analytics",
   linkActivity: "nav-link-activity",
   linkNotifications: "nav-link-notifications",
@@ -29,6 +30,13 @@ export const NAV = {
   logoutBtn: "top-nav-logout",
   notificationBell: "top-nav-notification-bell",
   notificationDropdown: "top-nav-notification-dropdown",
+} as const;
+
+export const AFFILIATE = {
+  page: "affiliate-pilot-page",
+  cases: "affiliate-pilot-cases",
+  workflow: "affiliate-pilot-workflow",
+  offerSubmit: "affiliate-pilot-offer-submit",
 } as const;
 
 export const EXECUTION_MISSION = {

@@ -13,6 +13,7 @@ import {
   Wallet,
   RocketLaunch,
   FlowArrow,
+  LinkSimple,
 } from "@phosphor-icons/react";
 import { NAV } from "@/constants/testIds";
 
@@ -24,6 +25,7 @@ const items = [
   { to: "/settlements", label: "Settlements", icon: Wallet, tid: NAV.linkSettlements },
   { to: "/missions", label: "Income Mission", icon: RocketLaunch, tid: NAV.linkMissions },
   { to: "/execution-missions", label: "Execution Missions", icon: FlowArrow, tid: NAV.linkExecutionMissions },
+  { to: "/affiliate-pilot", label: "Affiliate Pilot", icon: LinkSimple, tid: NAV.linkAffiliatePilot },
   { to: "/analytics", label: "Revenue Analytics", icon: ChartPieSlice, tid: NAV.linkAnalytics },
   { to: "/activity", label: "Activity Timeline", icon: ClockCounterClockwise, tid: NAV.linkActivity },
 ];

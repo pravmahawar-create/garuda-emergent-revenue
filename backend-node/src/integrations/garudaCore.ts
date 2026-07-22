@@ -158,3 +158,21 @@ export const prepareProductionDeliveryHandoff = (missionId: string, payload: unk
 export const recordProductionDeliveryReceipt = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/production-delivery/delivery-receipt`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
 export const recordProductionClientAcceptance = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/production-delivery/client-acceptance`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
 export const getPaymentAccountReadiness = () => requestCore<unknown>('/api/discovery/payments/account-readiness');
+export const getAffiliatePilotStatus = () => requestCore<unknown>('/api/affiliate-pilot/status');
+export const listAffiliateCases = () => requestCore<unknown[]>('/api/affiliate-pilot/cases');
+export const getAffiliateCase = (id: string) => requestCore<unknown>(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}`);
+export const listAffiliateEvents = (id: string) => requestCore<unknown[]>(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}/events`);
+function affiliateMutation(path: string, payload: unknown) {
+  return requestCore<unknown>(path, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+    body: JSON.stringify(payload),
+  });
+}
+export const createAffiliateOffer = (payload: unknown) => affiliateMutation('/api/affiliate-pilot/offers', payload);
+export const draftAffiliateCampaign = (id: string, payload: unknown) => affiliateMutation(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}/campaign`, payload);
+export const approveAffiliateHandoff = (id: string, payload: unknown) => affiliateMutation(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}/handoff`, payload);
+export const recordAffiliatePublication = (id: string, payload: unknown) => affiliateMutation(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}/publication`, payload);
+export const recordAffiliateConversion = (id: string, payload: unknown) => affiliateMutation(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}/conversion`, payload);
+export const verifyAffiliateCommission = (id: string, payload: unknown) => affiliateMutation(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}/commission`, payload);
+export const recordAffiliatePayment = (id: string, payload: unknown) => affiliateMutation(`/api/affiliate-pilot/cases/${encodeURIComponent(id)}/payment`, payload);

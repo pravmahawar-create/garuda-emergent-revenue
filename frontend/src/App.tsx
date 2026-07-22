@@ -11,6 +11,7 @@ import RevenuePage from "@/pages/RevenuePage";
 import SettlementsPage from "@/pages/SettlementsPage";
 import IncomeMissionsPage from "@/pages/IncomeMissionsPage";
 import ExecutionMissionsPage from "@/pages/ExecutionMissionsPage";
+import AffiliatePilotPage from "@/pages/AffiliatePilotPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ActivityPage from "@/pages/ActivityPage";
 import NotificationsPage from "@/pages/NotificationsPage";
@@ -63,6 +64,7 @@ export default function App() {
         <Route path="settlements" element={<SettlementsPage />} />
         <Route path="missions" element={<IncomeMissionsPage />} />
         <Route path="execution-missions" element={<ExecutionMissionsPage />} />
+        <Route path="affiliate-pilot" element={<AffiliatePilotPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
