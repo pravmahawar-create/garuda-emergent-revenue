@@ -22,5 +22,10 @@ router.patch('/execution-missions/:id/tasks/:taskId', ctrl.transitionExecutionTa
 router.get('/execution-missions/:id/task-events', ctrl.executionTaskEvents);
 router.post('/execution-missions/:id/auto-run', ctrl.runAutonomousExecutionTask);
 router.get('/execution-missions/:id/task-runs', ctrl.autonomousTaskRuns);
+router.get('/execution-missions/:id/action-requests', ctrl.externalActionRequests);
+router.post('/execution-missions/:id/action-requests', ctrl.createExternalActionRequest);
+router.post('/execution-missions/:id/action-requests/:requestId/decision', ctrl.decideExternalActionRequest);
+router.post('/execution-missions/:id/action-requests/:requestId/completion', ctrl.completeExternalActionRequest);
+router.get('/execution-missions/:id/mvp-readiness', ctrl.revenueMvpReadiness);
 
 export default router;

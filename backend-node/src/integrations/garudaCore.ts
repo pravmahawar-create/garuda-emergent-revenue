@@ -98,3 +98,8 @@ export const runAutonomousExecutionTask = (missionId: string, payload: unknown) 
   body: JSON.stringify(payload),
 });
 export const listAutonomousTaskRuns = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/task-runs`);
+export const listExternalActionRequests = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests`);
+export const createExternalActionRequest = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
+export const decideExternalActionRequest = (missionId: string, requestId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests/${encodeURIComponent(requestId)}/decision`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
+export const completeExternalActionRequest = (missionId: string, requestId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests/${encodeURIComponent(requestId)}/completion`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
+export const getRevenueMvpReadiness = (missionId: string) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/mvp-readiness`);

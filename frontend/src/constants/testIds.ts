@@ -46,6 +46,8 @@ export const EXECUTION_MISSION = {
   taskEventAudit: "execution-mission-task-event-audit",
   autonomousRunner: "execution-mission-autonomous-runner",
   autonomousRunAudit: "execution-mission-autonomous-run-audit",
+  externalActionQueue: "execution-mission-external-action-queue",
+  mvpReadiness: "execution-mission-mvp-readiness",
 } as const;
 
 export const MISSION = {
