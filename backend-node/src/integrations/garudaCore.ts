@@ -98,6 +98,7 @@ export const runAutonomousExecutionTask = (missionId: string, payload: unknown) 
   body: JSON.stringify(payload),
 });
 export const listAutonomousTaskRuns = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/task-runs`);
+export const runAutonomousExecutionMission = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/auto-run-all`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
 export const listExternalActionRequests = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests`);
 export const createExternalActionRequest = (missionId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
 export const decideExternalActionRequest = (missionId: string, requestId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests/${encodeURIComponent(requestId)}/decision`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
@@ -109,3 +110,5 @@ export const listConnectorDispatches = (missionId: string, requestId: string) =>
 export const getDeploymentReadiness = () => requestCore<unknown>('/api/discovery/deployment-readiness');
 export const recordVerifiedEarning = (missionId: string, requestId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/action-requests/${encodeURIComponent(requestId)}/verified-earning`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });
 export const listPilotLedger = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/pilot-ledger`);
+export const getRazorpayTestReadiness = () => requestCore<unknown>('/api/discovery/payments/razorpay-test/readiness');
+export const prepareRazorpayTestLink = (payload: unknown) => requestCore<unknown>('/api/discovery/payments/razorpay-test/links', { method: 'POST', headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' }, body: JSON.stringify(payload) });

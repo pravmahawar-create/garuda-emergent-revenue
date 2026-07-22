@@ -21,6 +21,7 @@ router.post('/execution-missions/:id/resubmit', ctrl.resubmitExecutionMission);
 router.patch('/execution-missions/:id/tasks/:taskId', ctrl.transitionExecutionTask);
 router.get('/execution-missions/:id/task-events', ctrl.executionTaskEvents);
 router.post('/execution-missions/:id/auto-run', ctrl.runAutonomousExecutionTask);
+router.post('/execution-missions/:id/auto-run-all', ctrl.runAutonomousExecutionMission);
 router.get('/execution-missions/:id/task-runs', ctrl.autonomousTaskRuns);
 router.get('/execution-missions/:id/action-requests', ctrl.externalActionRequests);
 router.post('/execution-missions/:id/action-requests', ctrl.createExternalActionRequest);
@@ -33,5 +34,7 @@ router.get('/execution-missions/:id/action-requests/:requestId/dispatches', ctrl
 router.get('/deployment-readiness', ctrl.deploymentReadiness);
 router.get('/execution-missions/:id/pilot-ledger', ctrl.pilotLedger);
 router.post('/execution-missions/:id/action-requests/:requestId/verified-earning', ctrl.recordVerifiedEarning);
+router.get('/payments/razorpay-test/readiness', ctrl.razorpayTestReadiness);
+router.post('/payments/razorpay-test/links', ctrl.prepareRazorpayTestLink);
 
 export default router;

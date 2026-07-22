@@ -3,6 +3,7 @@ import { completeExternalActionRequest as completeCoreExternalActionRequest, cre
 import { ApiError } from '../utils/errors';
 import { dispatchExternalAction as dispatchCoreExternalAction, listConnectorDispatches as listCoreConnectorDispatches, listRevenueConnectors as listCoreRevenueConnectors } from '../integrations/garudaCore';
 import { getDeploymentReadiness as getCoreDeploymentReadiness, listPilotLedger as listCorePilotLedger, recordVerifiedEarning as recordCoreVerifiedEarning } from '../integrations/garudaCore';
+import { getRazorpayTestReadiness as getCoreRazorpayTestReadiness, prepareRazorpayTestLink as prepareCoreRazorpayTestLink, runAutonomousExecutionMission as runCoreAutonomousExecutionMission } from '../integrations/garudaCore';
 
 export async function status(_req: Request, res: Response) {
   res.json(await getCoreStatus());
@@ -110,3 +111,6 @@ export async function connectorDispatches(req: Request, res: Response) { res.jso
 export async function deploymentReadiness(_req: Request, res: Response) { res.json(await getCoreDeploymentReadiness()); }
 export async function pilotLedger(req: Request, res: Response) { res.json(await listCorePilotLedger(req.params.id)); }
 export async function recordVerifiedEarning(req: Request, res: Response) { requireFounder(req, 'Confirm Founder approval to record this verified payment'); const { founderApproved: _confirmation, ...payload } = req.body || {}; res.status(201).json(await recordCoreVerifiedEarning(req.params.id, req.params.requestId, payload)); }
+export async function runAutonomousExecutionMission(req: Request, res: Response) { requireFounder(req, 'Confirm one-tap internal execution'); res.json(await runCoreAutonomousExecutionMission(req.params.id, {})); }
+export async function razorpayTestReadiness(_req: Request, res: Response) { res.json(await getCoreRazorpayTestReadiness()); }
+export async function prepareRazorpayTestLink(req: Request, res: Response) { requireFounder(req, 'Confirm preparation of this test-mode payment link'); const { founderApproved: _confirmation, ...payload } = req.body || {}; res.status(201).json(await prepareCoreRazorpayTestLink(payload)); }
