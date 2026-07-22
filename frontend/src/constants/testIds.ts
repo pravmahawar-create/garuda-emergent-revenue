@@ -42,6 +42,8 @@ export const EXECUTION_MISSION = {
   decisionAudit: "execution-mission-decision-audit",
   correctionForm: "execution-mission-correction-form",
   revisionHistory: "execution-mission-revision-history",
+  deliverableWorkspace: "execution-mission-deliverable-workspace",
+  taskEventAudit: "execution-mission-task-event-audit",
 } as const;
 
 export const MISSION = {

@@ -155,7 +155,8 @@ export interface RevenueExecutionMission {
   capability: { id: string; name: string; universe: string; readiness: string; matchScore: number; executionMode: string };
   architecturePlan: { status: string; planId: string; tasks: Array<{ id: string; title: string; brain: string; deliverable: string }> };
   boundedScope?: { deliverableType: string; requiredInputs: string[]; acceptanceCriteria: string[]; constraints: string[]; maxAttempts: number; revisionResponse?: string | null; approvedBy: string; approvedAt: string; scopeHash: string } | null;
-  workPackages?: Array<{ id: string; order: number; title: string; brain: string; dependencies: string[]; deliverable: string; status: string; acceptanceCriteria: string[] }>;
+  workPackages?: Array<{ id: string; order: number; title: string; brain: string; dependencies: string[]; deliverable: string; status: "planned" | "ready" | "in_progress" | "completed" | "blocked"; statusNote?: string; evidence?: RevenueTaskEvidence[]; lastEventHash?: string; acceptanceCriteria: string[] }>;
+  deliverableWorkspace?: { status: "active" | "complete"; totalTasks: number; completedTasks: number; blockedTasks: number; progressPercent: number; updatedAt: string; externalActionsAuthorized: false } | null;
   executionEvidence?: {
     status: string; loopId: string; planId: string; revisionNumber: number; reviewerVerdict: "APPROVE" | "REQUEST_CHANGES" | "REJECT" | null;
     validationEvidence: Array<{ evidenceId: string; targetFile: string; status: string; exitCode: number; targetModified: boolean }>;
@@ -183,6 +184,9 @@ export interface RevenueExecutionMission {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface RevenueTaskEvidence { kind: "artifact" | "test" | "review" | "reference"; label: string; reference: string; sha256?: string | null }
+export interface RevenueMissionTaskEvent { id?: string; missionId: string; taskId: string; fromStatus: string; toStatus: string; actor: "founder" | "garuda"; note: string; evidence: RevenueTaskEvidence[]; previousEventHash?: string | null; eventHash: string; createdAt: string }
 
 export interface RevenueMissionDecision {
   id: string;

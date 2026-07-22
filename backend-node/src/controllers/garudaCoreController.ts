@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, decideExecutionMission as decideCoreExecutionMission, getCoreStatus, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissionDecisions as listCoreExecutionMissionDecisions, listExecutionMissions as listCoreExecutionMissions, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, resubmitExecutionMission as resubmitCoreExecutionMission, startIncomeGoal } from '../integrations/garudaCore';
+import { createExecutionMission as createCoreExecutionMission, decideDiscoveryCandidate, decideExecutionMission as decideCoreExecutionMission, getCoreStatus, listCoreRevenue, listCoreSettlements, listDiscoveryCandidates, listExecutionMissionDecisions as listCoreExecutionMissionDecisions, listExecutionMissions as listCoreExecutionMissions, listExecutionTaskEvents as listCoreExecutionTaskEvents, listIncomeGoals, prepareExecutionMission as prepareCoreExecutionMission, previewIncomeGoal, resubmitExecutionMission as resubmitCoreExecutionMission, startIncomeGoal, transitionExecutionTask as transitionCoreExecutionTask } from '../integrations/garudaCore';
 import { ApiError } from '../utils/errors';
 
 export async function status(_req: Request, res: Response) {
@@ -73,4 +73,15 @@ export async function resubmitExecutionMission(req: Request, res: Response) {
   if (req.body?.founderApproved !== true) throw new ApiError(400, 'Confirm Founder approval for corrected resubmission', 'APPROVAL_CONFIRMATION_REQUIRED');
   const { founderApproved: _confirmation, ...payload } = req.body || {};
   res.json(await resubmitCoreExecutionMission(req.params.id, payload));
+}
+
+export async function transitionExecutionTask(req: Request, res: Response) {
+  if (req.user?.role !== 'admin') throw new ApiError(403, 'Founder admin approval is required', 'FOUNDER_APPROVAL_REQUIRED');
+  if (req.body?.founderApproved !== true) throw new ApiError(400, 'Confirm Founder approval for the task update', 'APPROVAL_CONFIRMATION_REQUIRED');
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  res.json(await transitionCoreExecutionTask(req.params.id, req.params.taskId, payload));
+}
+
+export async function executionTaskEvents(req: Request, res: Response) {
+  res.json(await listCoreExecutionTaskEvents(req.params.id));
 }

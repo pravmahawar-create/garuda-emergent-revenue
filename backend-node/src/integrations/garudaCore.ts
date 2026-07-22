@@ -86,3 +86,9 @@ export const resubmitExecutionMission = (missionId: string, payload: unknown) =>
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
   body: JSON.stringify(payload),
 });
+export const transitionExecutionTask = (missionId: string, taskId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/tasks/${encodeURIComponent(taskId)}`, {
+  method: 'PATCH',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
+export const listExecutionTaskEvents = (missionId: string) => requestCore<unknown[]>(`/api/discovery/execution-missions/${encodeURIComponent(missionId)}/task-events`);
