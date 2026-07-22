@@ -30,5 +30,8 @@ router.get('/execution-missions/:id/mvp-readiness', ctrl.revenueMvpReadiness);
 router.get('/revenue-connectors', ctrl.revenueConnectors);
 router.post('/execution-missions/:id/action-requests/:requestId/dispatch', ctrl.dispatchExternalAction);
 router.get('/execution-missions/:id/action-requests/:requestId/dispatches', ctrl.connectorDispatches);
+router.get('/deployment-readiness', ctrl.deploymentReadiness);
+router.get('/execution-missions/:id/pilot-ledger', ctrl.pilotLedger);
+router.post('/execution-missions/:id/action-requests/:requestId/verified-earning', ctrl.recordVerifiedEarning);
 
 export default router;

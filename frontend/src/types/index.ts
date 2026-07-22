@@ -192,6 +192,8 @@ export interface RevenueExternalActionRequest { id: string; missionId: string; r
 export interface RevenueConnectorDispatch { id: string; connectorId: string; mode: "dry_run" | "dispatch"; status: "validated" | "dispatched" | "failed"; receiptHash: string; response: { simulated: boolean; providerReference: string }; }
 export interface RevenueConnector { id: string; name: string; enabled: boolean; operational?: boolean; production: boolean; supportedActions: RevenueExternalActionRequest["actionType"][]; requiresCredentials: boolean; health?: { enabled: boolean; requested: boolean; endpointValid: boolean; secretPresent: boolean }; }
 export interface RevenueMvpReadiness { stage: string; workingMvp: boolean; revenueClaimAllowed: boolean; checks: { founderApproved: boolean; workspaceComplete: boolean; evidenceComplete: boolean; actionApproved: boolean; externalReceiptVerified: boolean; paymentVerified: boolean }; truth: string; }
+export interface RevenueDeploymentReadiness { ready: boolean; checks: { productionMode: boolean; publicHttpsUrl: boolean; databaseConfigured: boolean; connectorExplicitlyConfigured: boolean }; externalDispatchDefaultOff: boolean; truth: string; }
+export interface RevenuePilotLedgerEntry { id: string; missionId: string; actionRequestId: string; amount: number; currency: string; provider: string; reference: string; entryHash: string; status: "verified"; verifiedAt: string; governance: { revenueClaimAllowed: true; payoutNotImplied: true }; }
 
 export interface RevenueMissionDecision {
   id: string;
