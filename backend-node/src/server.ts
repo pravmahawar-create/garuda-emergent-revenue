@@ -8,7 +8,7 @@ import helmet from 'helmet';
 import { env } from './config/env';
 import { connectDB } from './config/db';
 import { seedAdmin } from './services/authService';
-import { purgeLegacyDemoData, seedDemoData } from './services/seedService';
+import { purgeLegacyDemoData } from './services/seedService';
 import router from './routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 
@@ -16,7 +16,6 @@ async function bootstrap() {
   await connectDB();
   await seedAdmin();
   await purgeLegacyDemoData();
-  if (process.env.ENABLE_DEMO_DATA === 'true') await seedDemoData();
 
   const app = express();
   app.use(helmet({ contentSecurityPolicy: false }));

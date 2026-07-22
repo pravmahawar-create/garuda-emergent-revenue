@@ -4,6 +4,7 @@ import { ApiError } from '../utils/errors';
 import { dispatchExternalAction as dispatchCoreExternalAction, listConnectorDispatches as listCoreConnectorDispatches, listRevenueConnectors as listCoreRevenueConnectors } from '../integrations/garudaCore';
 import { getDeploymentReadiness as getCoreDeploymentReadiness, listPilotLedger as listCorePilotLedger, recordVerifiedEarning as recordCoreVerifiedEarning } from '../integrations/garudaCore';
 import { getRazorpayTestReadiness as getCoreRazorpayTestReadiness, prepareRazorpayTestLink as prepareCoreRazorpayTestLink, runAutonomousExecutionMission as runCoreAutonomousExecutionMission } from '../integrations/garudaCore';
+import { listWorkIntakes as listCoreWorkIntakes, prepareWorkIntakeHandoff as prepareCoreWorkIntakeHandoff, verifyWorkIntakeAndCreateMission as verifyCoreWorkIntakeAndCreateMission } from '../integrations/garudaCore';
 
 export async function status(_req: Request, res: Response) {
   res.json(await getCoreStatus());
@@ -45,6 +46,22 @@ export async function decideCandidate(req: Request, res: Response) {
 
 export async function executionMissions(_req: Request, res: Response) {
   res.json(await listCoreExecutionMissions());
+}
+
+export async function workIntakes(_req: Request, res: Response) {
+  res.json(await listCoreWorkIntakes());
+}
+
+export async function prepareWorkIntakeHandoff(req: Request, res: Response) {
+  requireFounder(req, 'Confirm Founder authorization for this manual application or quotation handoff');
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  res.status(201).json(await prepareCoreWorkIntakeHandoff(req.params.id, payload));
+}
+
+export async function verifyWorkIntakeAndCreateMission(req: Request, res: Response) {
+  requireFounder(req, 'Confirm Founder verification of the real client engagement and terms');
+  const { founderApproved: _confirmation, ...payload } = req.body || {};
+  res.status(201).json(await verifyCoreWorkIntakeAndCreateMission(req.params.id, payload));
 }
 
 export async function createExecutionMission(req: Request, res: Response) {

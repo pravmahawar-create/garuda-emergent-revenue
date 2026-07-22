@@ -151,7 +151,14 @@ export interface RevenueExecutionMission {
   incomeGoalId: string;
   missionKey: string;
   status: "awaiting_bounded_scope" | "ready_for_founder_review" | "founder_approved" | "changes_required" | "rejected" | "blocked";
-  opportunity: { title: string; company: string; source: string; originalUrl: string; score: number };
+  opportunity: {
+    title: string; company: string; source: string; originalUrl: string; score: number;
+    listingClassification?: "public_listing_not_contract";
+    engagementVerification?: { verified: true; reference: string; evidenceKind: string; verifiedAt: string; workAuthorizationConfirmed: true; termsAcceptedByClient: true; truthHash: string };
+    brief?: RevenueWorkBrief;
+  };
+  realWorkIntake?: { id: string; status: "work_confirmed" | "mission_created"; truthHash: string; lastAuditHash?: string | null; listingClassification: "public_listing_not_contract"; workAuthorizationConfirmed: true };
+  truthStatus?: "verified_real_work" | "listing_only_not_contract";
   capability: { id: string; name: string; universe: string; readiness: string; matchScore: number; executionMode: string };
   architecturePlan: { status: string; planId: string; tasks: Array<{ id: string; title: string; brain: string; deliverable: string }> };
   boundedScope?: { deliverableType: string; requiredInputs: string[]; acceptanceCriteria: string[]; constraints: string[]; maxAttempts: number; revisionResponse?: string | null; approvedBy: string; approvedAt: string; scopeHash: string } | null;
@@ -176,6 +183,8 @@ export interface RevenueExecutionMission {
     sourceApplyAllowed: boolean;
     commitPushDeployAllowed: boolean;
     founderApprovalRequiredForExternalActions: boolean;
+    verifiedRealWorkRequired?: boolean;
+    listingAloneNeverCreatesMission?: boolean;
   };
   missionHash: string;
   founderDecision?: { decision: "approved" | "request_changes" | "rejected"; notes: string; decidedAt: string; decisionHash: string; evidenceHash: string } | null;
@@ -184,6 +193,49 @@ export interface RevenueExecutionMission {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface RevenueWorkBrief {
+  title: string;
+  deliverableType: string;
+  scopeSummary: string;
+  requiredInputs: string[];
+  price: { amount: number; currency: string };
+  deadline: string;
+  acceptanceCriteria: string[];
+  clientBriefConfirmed: true;
+  priceConfirmedByClient: true;
+  deadlineConfirmedByClient: true;
+}
+
+export interface RevenueWorkIntakeEvent {
+  id: string;
+  intakeId: string;
+  candidateId: string;
+  sequence: number;
+  eventType: "handoff_prepared" | "work_confirmed" | "mission_created";
+  actor: "founder" | "garuda";
+  details: Record<string, unknown>;
+  previousEventHash?: string | null;
+  eventHash: string;
+  occurredAt: string;
+}
+
+export interface RevenueWorkIntake {
+  id: string;
+  candidateId: string;
+  incomeGoalId: string;
+  status: "handoff_ready" | "work_confirmed" | "mission_created";
+  listing: { title: string; company: string; source: string; originalUrl: string; score: number; classification: "public_listing_not_contract" };
+  engagement?: { verified: true; counterparty: string; channel: string; evidenceKind: string; reference: string; occurredAt: string; verifiedAt: string; workAuthorizationConfirmed: true; termsAcceptedByClient: true } | null;
+  brief?: RevenueWorkBrief | null;
+  handoff?: { handoffType: "application" | "quotation"; destination: string; summary: string; preparedAt: string; packageHash: string; governance: { manualSubmissionRequired: true; automaticSubmissionAllowed: false; externalExecutionPerformed: false; contractConfirmed: false; missionCreationAllowed: false } } | null;
+  executionMissionId?: string | null;
+  truthHash: string;
+  lastAuditHash?: string | null;
+  auditTrail: RevenueWorkIntakeEvent[];
+}
+
+export interface RealWorkMissionResult { intake: RevenueWorkIntake; mission: RevenueExecutionMission }
 
 export interface RevenueTaskEvidence { kind: "artifact" | "test" | "review" | "reference"; label: string; reference: string; sha256?: string | null }
 export interface RevenueMissionTaskEvent { id?: string; missionId: string; taskId: string; fromStatus: string; toStatus: string; actor: "founder" | "garuda"; note: string; evidence: RevenueTaskEvidence[]; previousEventHash?: string | null; eventHash: string; createdAt: string }

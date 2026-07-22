@@ -64,6 +64,17 @@ export const decideDiscoveryCandidate = (id: string, status: 'approved' | 'dismi
   headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
   body: JSON.stringify({ status }),
 });
+export const listWorkIntakes = () => requestCore<unknown[]>('/api/discovery/work-intakes');
+export const prepareWorkIntakeHandoff = (candidateId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/work-intake/handoff`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
+export const verifyWorkIntakeAndCreateMission = (candidateId: string, payload: unknown) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/work-intake/mission`, {
+  method: 'POST',
+  headers: { 'content-type': 'application/json', 'x-garuda-founder-approved': 'true' },
+  body: JSON.stringify(payload),
+});
 export const listExecutionMissions = () => requestCore<unknown[]>('/api/discovery/execution-missions');
 export const createExecutionMission = (candidateId: string) => requestCore<unknown>(`/api/discovery/candidates/${encodeURIComponent(candidateId)}/execution-mission`, {
   method: 'POST',
