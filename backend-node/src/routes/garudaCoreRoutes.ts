@@ -39,5 +39,12 @@ router.get('/execution-missions/:id/pilot-ledger', ctrl.pilotLedger);
 router.post('/execution-missions/:id/action-requests/:requestId/verified-earning', ctrl.recordVerifiedEarning);
 router.get('/payments/razorpay-test/readiness', ctrl.razorpayTestReadiness);
 router.post('/payments/razorpay-test/links', ctrl.prepareRazorpayTestLink);
+router.get('/payments/account-readiness', ctrl.paymentAccountReadiness);
+router.get('/execution-missions/:id/production-delivery', ctrl.productionDelivery);
+router.post('/execution-missions/:id/production-delivery/quality', ctrl.recordProductionQuality);
+router.post('/execution-missions/:id/production-delivery/final-approval', ctrl.approveFinalDelivery);
+router.post('/execution-missions/:id/production-delivery/handoff', ctrl.prepareProductionDeliveryHandoff);
+router.post('/execution-missions/:id/production-delivery/delivery-receipt', ctrl.recordProductionDeliveryReceipt);
+router.post('/execution-missions/:id/production-delivery/client-acceptance', ctrl.recordProductionClientAcceptance);
 
 export default router;

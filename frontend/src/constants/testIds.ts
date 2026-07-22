@@ -52,6 +52,14 @@ export const EXECUTION_MISSION = {
   autonomousRunAudit: "execution-mission-autonomous-run-audit",
   externalActionQueue: "execution-mission-external-action-queue",
   mvpReadiness: "execution-mission-mvp-readiness",
+  productionDelivery: "production-delivery-panel",
+  productionQuality: "production-delivery-quality",
+  finalDeliveryApproval: "production-delivery-final-approval",
+  authorizedDeliveryHandoff: "production-delivery-handoff",
+  deliveryReceipt: "production-delivery-receipt",
+  clientAcceptance: "production-delivery-client-acceptance",
+  paymentReadiness: "production-payment-readiness",
+  productionAudit: "production-delivery-audit",
 } as const;
 
 export const MISSION = {

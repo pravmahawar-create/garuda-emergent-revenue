@@ -88,6 +88,9 @@ export type SettlementStatus = "pending" | "eligible" | "processing" | "settled"
 export interface SettlementLedger {
   id: string;
   revenueRecordId: string;
+  executionMissionId?: string;
+  paymentEventKey?: string;
+  verificationEvidence?: { paymentReceiptHash?: string; providerReference?: string } | null;
   grossAmount: number;
   feeAmount: number;
   netAmount: number;
@@ -164,6 +167,7 @@ export interface RevenueExecutionMission {
   boundedScope?: { deliverableType: string; requiredInputs: string[]; acceptanceCriteria: string[]; constraints: string[]; maxAttempts: number; revisionResponse?: string | null; approvedBy: string; approvedAt: string; scopeHash: string } | null;
   workPackages?: Array<{ id: string; order: number; title: string; brain: string; dependencies: string[]; deliverable: string; status: "planned" | "ready" | "in_progress" | "completed" | "blocked"; statusNote?: string; evidence?: RevenueTaskEvidence[]; lastEventHash?: string; acceptanceCriteria: string[] }>;
   deliverableWorkspace?: { status: "active" | "complete"; totalTasks: number; completedTasks: number; blockedTasks: number; progressPercent: number; updatedAt: string; externalActionsAuthorized: false } | null;
+  productionDelivery?: { id: string; status: RevenueProductionDeliveryStatus; qualityHash?: string | null; finalApprovalHash?: string | null; packageHash?: string | null; deliveryReceiptHash?: string | null; clientAcceptanceHash?: string | null; paymentReceiptHash?: string | null; revenueRecordId?: string | null; settlementLedgerId?: string | null; lastAuditHash?: string | null; automaticDeliveryAllowed: false; livePaymentInitiationAllowed: false } | null;
   executionEvidence?: {
     status: string; loopId: string; planId: string; revisionNumber: number; reviewerVerdict: "APPROVE" | "REQUEST_CHANGES" | "REJECT" | null;
     validationEvidence: Array<{ evidenceId: string; targetFile: string; status: string; exitCode: number; targetModified: boolean }>;
@@ -246,6 +250,31 @@ export interface RevenueConnector { id: string; name: string; enabled: boolean; 
 export interface RevenueMvpReadiness { stage: string; workingMvp: boolean; revenueClaimAllowed: boolean; checks: { founderApproved: boolean; workspaceComplete: boolean; evidenceComplete: boolean; actionApproved: boolean; externalReceiptVerified: boolean; paymentVerified: boolean }; truth: string; }
 export interface RevenueDeploymentReadiness { ready: boolean; checks: { productionMode: boolean; publicHttpsUrl: boolean; databaseConfigured: boolean; connectorExplicitlyConfigured: boolean }; externalDispatchDefaultOff: boolean; truth: string; }
 export interface RevenuePilotLedgerEntry { id: string; missionId: string; actionRequestId: string; amount: number; currency: string; provider: string; reference: string; entryHash: string; status: "verified"; verifiedAt: string; governance: { revenueClaimAllowed: true; payoutNotImplied: true }; }
+
+export type RevenueProductionDeliveryStatus = "quality_passed" | "final_approved" | "handoff_ready" | "delivered" | "client_accepted" | "payment_verified";
+export interface RevenueProductionDeliveryEvent { id: string; deliveryId: string; missionId: string; sequence: number; eventType: "quality_passed" | "final_approved" | "delivery_handoff_prepared" | "delivery_recorded" | "client_accepted" | "payment_verified" | "settlement_ledger_created"; actor: "garuda" | "founder" | "client" | "payment_provider"; details: Record<string, unknown>; previousEventHash?: string | null; eventHash: string; occurredAt: string; }
+export interface RevenueProductionDelivery {
+  id: string;
+  missionId: string;
+  status: RevenueProductionDeliveryStatus;
+  workIntakeTruthHash: string;
+  client: string;
+  contractAmount: number;
+  currency: string;
+  acceptanceCriteria: string[];
+  artifactManifest: RevenueTaskEvidence[];
+  qualityReport: { qualityHash: string; outcome: "passed"; testedAt: string; automatedTests: Array<{ name: string; command: string; exitCode: 0; passed: true; reference: string; sha256: string }>; criterionChecks: Array<{ criterion: string; passed: true; reference: string; sha256: string }> };
+  finalApproval?: { approvalHash: string; notes: string; approvedAt: string } | null;
+  deliveryHandoff?: { packageHash: string; channel: string; destination: string; summary: string; preparedAt: string } | null;
+  deliveryReceipt?: { receiptHash: string; provider: string; reference: string; evidence: string; deliveredAt: string } | null;
+  clientAcceptance?: { acceptanceHash: string; reference: string; evidence: string; acceptedAt: string } | null;
+  paymentReceipt?: { paymentReceiptHash: string; provider: string; providerReference: string; amount: number; currency: string; receivedAt: string; verificationMethod: "signed_provider_webhook" } | null;
+  revenueRecordId?: string | null;
+  settlementLedgerId?: string | null;
+  lastAuditHash?: string | null;
+  auditTrail: RevenueProductionDeliveryEvent[];
+}
+export interface RevenuePaymentAccountReadiness { ready: boolean; provider?: string | null; accountReferenceHash?: string | null; supportedCurrencies: string[]; checks: { providerConfigured: boolean; accountReferenceConfigured: boolean; providerKycVerified: boolean; eligibleAccountHolderConfirmed: boolean; payoutsEnabledByProvider: boolean; supportedCurrenciesConfigured: boolean; signedWebhookConfigured: boolean }; livePaymentInitiationEnabled: false; rawKycDataStored: false; truth: string; }
 
 export interface RevenueMissionDecision {
   id: string;

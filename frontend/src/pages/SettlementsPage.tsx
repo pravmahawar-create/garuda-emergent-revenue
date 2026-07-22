@@ -58,7 +58,7 @@ export default function SettlementsPage() {
       <div data-testid={SETTLEMENT.table} className="g-card overflow-x-auto">
         <table className="w-full min-w-[850px]">
           <thead><tr className="border-b border-gborder">
-            {['Created', 'Status', 'Gross', 'Fee', 'Net', 'Eligible', 'Receipt'].map((label) => <th key={label} className="px-5 py-3 text-left text-xs uppercase tracking-[0.15em] text-text_muted">{label}</th>)}
+            {['Created', 'Status', 'Gross', 'Fee', 'Net', 'Eligible', 'Receipt / truth'].map((label) => <th key={label} className="px-5 py-3 text-left text-xs uppercase tracking-[0.15em] text-text_muted">{label}</th>)}
           </tr></thead>
           <tbody>
             {settlements.isLoading && <tr><td colSpan={7} className="px-5 py-10 text-center text-text_muted">Loading ledger…</td></tr>}
@@ -70,7 +70,7 @@ export default function SettlementsPage() {
               <td className="px-5 py-4 text-text_secondary">{formatCurrency(item.feeAmount, item.currency)} ({item.feeRatePercent}%)</td>
               <td className="px-5 py-4 font-heading text-gold">{formatCurrency(item.netAmount, item.currency)}</td>
               <td className="px-5 py-4">{item.payoutEligible ? "Yes" : "No"}</td>
-              <td className="px-5 py-4 text-text_secondary">{item.receiptReference || "—"}</td>
+              <td className="px-5 py-4 text-text_secondary">{item.receiptReference || item.verificationEvidence?.providerReference || item.eligibilityReasons.join(", ") || "—"}</td>
             </tr>)}
           </tbody>
         </table>
