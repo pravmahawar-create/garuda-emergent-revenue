@@ -26,10 +26,15 @@ export default function OpportunitiesPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Opportunity | null>(null);
 
-  const { data: items = [], isLoading } = useQuery({
+  const { data: rawItems, isLoading } = useQuery({
     queryKey: ["opportunities"],
     queryFn: async () => (await api.get<Opportunity[]>("/opportunities")).data,
   });
+
+  const items = useMemo(
+    () => (Array.isArray(rawItems) ? rawItems : Array.isArray((rawItems as any)?.opportunities) ? (rawItems as any).opportunities : []),
+    [rawItems]
+  );
 
   const del = useMutation({
     mutationFn: async (id: string) => (await api.delete(`/opportunities/${id}`)).data,

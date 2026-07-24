@@ -28,15 +28,18 @@ export default function TasksPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Task | null>(null);
 
-  const { data: tasks = [], isLoading } = useQuery({
+  const { data: rawTasks, isLoading } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => (await api.get<Task[]>("/tasks")).data,
   });
-  const { data: opps = [] } = useQuery({
+  const { data: rawOpps } = useQuery({
     queryKey: ["opportunities"],
     queryFn: async () => (await api.get<Opportunity[]>("/opportunities")).data,
   });
-  const oppMap = new Map(opps.map((o) => [o.id, o]));
+
+  const tasks: Task[] = Array.isArray(rawTasks) ? rawTasks : Array.isArray((rawTasks as any)?.tasks) ? (rawTasks as any).tasks : [];
+  const opps: Opportunity[] = Array.isArray(rawOpps) ? rawOpps : Array.isArray((rawOpps as any)?.opportunities) ? (rawOpps as any).opportunities : [];
+  const oppMap = new Map<string, Opportunity>(opps.map((o: Opportunity) => [o.id, o]));
 
   const patch = useMutation({
     mutationFn: async ({ id, body }: { id: string; body: Partial<Task> }) =>

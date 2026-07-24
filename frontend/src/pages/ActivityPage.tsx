@@ -29,10 +29,16 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function ActivityPage() {
-  const { data: items = [], isLoading } = useQuery({
+  const { data: rawItems, isLoading } = useQuery({
     queryKey: ["activity"],
     queryFn: async () => (await api.get<Activity[]>("/activity?limit=100")).data,
   });
+
+  const items = Array.isArray(rawItems)
+    ? rawItems
+    : Array.isArray((rawItems as any)?.activity)
+    ? (rawItems as any).activity
+    : [];
 
   const grouped = groupByDate(items);
 

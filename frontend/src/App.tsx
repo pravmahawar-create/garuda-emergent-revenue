@@ -61,10 +61,13 @@ export default function App() {
         <Route path="opportunities" element={<OpportunitiesPage />} />
         <Route path="tasks" element={<TasksPage />} />
         <Route path="revenue" element={<RevenuePage />} />
+        <Route path="earnings" element={<Navigate to="/revenue" replace />} />
         <Route path="settlements" element={<SettlementsPage />} />
         <Route path="missions" element={<IncomeMissionsPage />} />
+        <Route path="income-mission" element={<Navigate to="/missions" replace />} />
         <Route path="execution-missions" element={<ExecutionMissionsPage />} />
         <Route path="affiliate-pilot" element={<AffiliatePilotPage />} />
+        <Route path="affiliate" element={<Navigate to="/affiliate-pilot" replace />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="activity" element={<ActivityPage />} />
         <Route path="notifications" element={<NotificationsPage />} />

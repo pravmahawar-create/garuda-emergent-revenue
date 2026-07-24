@@ -13,15 +13,18 @@ export default function RevenuePage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<RevenueRecord | null>(null);
 
-  const { data: items = [], isLoading } = useQuery({
+  const { data: rawItems, isLoading } = useQuery({
     queryKey: ["revenue"],
     queryFn: async () => (await api.get<RevenueRecord[]>("/revenue")).data,
   });
-  const { data: opps = [] } = useQuery({
+  const { data: rawOpps } = useQuery({
     queryKey: ["opportunities"],
     queryFn: async () => (await api.get<Opportunity[]>("/opportunities")).data,
   });
-  const oppMap = new Map(opps.map((o) => [o.id, o]));
+
+  const items: RevenueRecord[] = Array.isArray(rawItems) ? rawItems : Array.isArray((rawItems as any)?.records) ? (rawItems as any).records : [];
+  const opps: Opportunity[] = Array.isArray(rawOpps) ? rawOpps : Array.isArray((rawOpps as any)?.opportunities) ? (rawOpps as any).opportunities : [];
+  const oppMap = new Map<string, Opportunity>(opps.map((o: Opportunity) => [o.id, o]));
 
   const del = useMutation({
     mutationFn: async (id: string) => (await api.delete(`/revenue/${id}`)).data,

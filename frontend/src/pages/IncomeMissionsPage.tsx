@@ -22,8 +22,17 @@ export default function IncomeMissionsPage() {
     mutationFn: async ({ id, status }: { id: string; status: "approved" | "dismissed" }) => (await api.patch(`/garuda-core/discovery/candidates/${id}/decision`, { status, founderApproved: true })).data,
     onSuccess: () => qc.invalidateQueries({ queryKey: ["garuda-discovery-candidates"] }),
   });
-  const items = goals.data || [];
-  const visibleCandidates = (candidates.data || []).filter((item) => item.score >= minScore);
+  const items = Array.isArray(goals.data)
+    ? goals.data
+    : Array.isArray((goals.data as any)?.goals)
+    ? (goals.data as any).goals
+    : [];
+  const rawCandidates = Array.isArray(candidates.data)
+    ? candidates.data
+    : Array.isArray((candidates.data as any)?.candidates)
+    ? (candidates.data as any).candidates
+    : [];
+  const visibleCandidates = rawCandidates.filter((item) => (item?.score ?? 0) >= minScore);
   const statusLabel = candidateStatus === "ranked" ? "Ranked" : candidateStatus === "approved" ? "Shortlisted" : "Dismissed";
 
   return <div data-testid={MISSION.page} className="animate-fade-in-up space-y-6">

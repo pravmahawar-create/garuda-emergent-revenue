@@ -24,7 +24,11 @@ export default function SettlementsPage() {
     enabled: status.data?.connected === true,
   });
 
-  const items = settlements.data || [];
+  const items: SettlementLedger[] = Array.isArray(settlements.data)
+    ? settlements.data
+    : Array.isArray((settlements.data as any)?.settlements)
+    ? (settlements.data as any).settlements
+    : [];
   const eligibleNet = items
     .filter((item) => item.payoutEligible && item.status !== "settled")
     .reduce((sum, item) => sum + item.netAmount, 0);
@@ -70,7 +74,7 @@ export default function SettlementsPage() {
               <td className="px-5 py-4 text-text_secondary">{formatCurrency(item.feeAmount, item.currency)} ({item.feeRatePercent}%)</td>
               <td className="px-5 py-4 font-heading text-gold">{formatCurrency(item.netAmount, item.currency)}</td>
               <td className="px-5 py-4">{item.payoutEligible ? "Yes" : "No"}</td>
-              <td className="px-5 py-4 text-text_secondary">{item.receiptReference || item.verificationEvidence?.providerReference || item.eligibilityReasons.join(", ") || "—"}</td>
+              <td className="px-5 py-4 text-text_secondary">{item.receiptReference || item.verificationEvidence?.providerReference || (item.eligibilityReasons || []).join(", ") || "—"}</td>
             </tr>)}
           </tbody>
         </table>

@@ -34,7 +34,12 @@ export default function AffiliatePilotPage() {
   const set = (name: string) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setForm((old) => ({ ...old, [name]: event.target.value }));
   const status = useQuery({ queryKey: ["affiliate-pilot-status"], queryFn: async () => (await api.get<PilotStatus>("/garuda-core/affiliate-pilot/status")).data, refetchInterval: 30000 });
   const cases = useQuery({ queryKey: ["affiliate-pilot-cases"], queryFn: async () => (await api.get<AffiliateCase[]>("/garuda-core/affiliate-pilot/cases")).data, refetchInterval: 30000 });
-  const selected = useMemo(() => cases.data?.find((item) => item.id === selectedId) || cases.data?.[0], [cases.data, selectedId]);
+  const casesList = Array.isArray(cases.data)
+    ? cases.data
+    : Array.isArray((cases.data as any)?.cases)
+    ? (cases.data as any).cases
+    : [];
+  const selected = useMemo(() => casesList.find((item: any) => item.id === selectedId) || casesList[0], [casesList, selectedId]);
   const refresh = () => { setConfirmed(false); setForm((old) => ({ currency: old.currency || "USD", commissionType: old.commissionType || "percentage", channel: old.channel || "owned_website", payoutStatus: old.payoutStatus || "payable" })); qc.invalidateQueries({ queryKey: ["affiliate-pilot-cases"] }); qc.invalidateQueries({ queryKey: ["affiliate-pilot-status"] }); };
 
   const create = useMutation({ mutationFn: async () => (await api.post<AffiliateCase>("/garuda-core/affiliate-pilot/offers", {
