@@ -34,12 +34,14 @@ export default function AffiliatePilotPage() {
   const set = (name: string) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setForm((old) => ({ ...old, [name]: event.target.value }));
   const status = useQuery({ queryKey: ["affiliate-pilot-status"], queryFn: async () => (await api.get<PilotStatus>("/garuda-core/affiliate-pilot/status")).data, refetchInterval: 30000 });
   const cases = useQuery({ queryKey: ["affiliate-pilot-cases"], queryFn: async () => (await api.get<AffiliateCase[]>("/garuda-core/affiliate-pilot/cases")).data, refetchInterval: 30000 });
-  const casesList = Array.isArray(cases.data)
-    ? cases.data
-    : Array.isArray((cases.data as any)?.cases)
-    ? (cases.data as any).cases
-    : [];
-  const selected = useMemo(() => casesList.find((item: any) => item.id === selectedId) || casesList[0], [casesList, selectedId]);
+  const selected = useMemo(() => {
+    const list: AffiliateCase[] = Array.isArray(cases.data)
+      ? cases.data
+      : Array.isArray((cases.data as any)?.cases)
+      ? (cases.data as any).cases
+      : [];
+    return list.find((item) => item.id === selectedId) || list[0];
+  }, [cases.data, selectedId]);
   const refresh = () => { setConfirmed(false); setForm((old) => ({ currency: old.currency || "USD", commissionType: old.commissionType || "percentage", channel: old.channel || "owned_website", payoutStatus: old.payoutStatus || "payable" })); qc.invalidateQueries({ queryKey: ["affiliate-pilot-cases"] }); qc.invalidateQueries({ queryKey: ["affiliate-pilot-status"] }); };
 
   const create = useMutation({ mutationFn: async () => (await api.post<AffiliateCase>("/garuda-core/affiliate-pilot/offers", {
