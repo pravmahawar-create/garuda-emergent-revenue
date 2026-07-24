@@ -33,11 +33,17 @@ export default function TopNav() {
   const bellRef = useRef<HTMLDivElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const { data: notifs = [] } = useQuery({
+  const { data: notifsData } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => (await api.get<Notification[]>("/notifications")).data,
     refetchInterval: 30000,
   });
+
+  const notifs: Notification[] = Array.isArray(notifsData)
+    ? notifsData
+    : Array.isArray((notifsData as any)?.notifications)
+    ? (notifsData as any).notifications
+    : [];
 
   const unread = notifs.filter((n) => !n.read).length;
 
