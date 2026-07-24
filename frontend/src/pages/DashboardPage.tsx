@@ -138,31 +138,38 @@ export default function DashboardPage() {
           <h3 className="font-heading text-2xl tracking-tight">By stage</h3>
           <div className="mt-6 space-y-4">
             {summary &&
-              (Object.keys(summary.stageBreakdown) as OppStage[]).map((stage) => {
-                const s = summary.stageBreakdown[stage];
+              (() => {
+                const breakdown = (summary.stageBreakdown ?? {}) as Record<string, { value: number; count: number }>;
+                const stages = Object.keys(breakdown) as OppStage[];
+                if (stages.length === 0) {
+                  return <div className="text-sm text-text_muted">No pipeline data available.</div>;
+                }
                 const maxVal = Math.max(
-                  ...Object.values(summary.stageBreakdown).map((x) => x.value),
+                  ...Object.values(breakdown).map((x) => (x as any)?.value ?? 0),
                   1,
                 );
-                const pct = Math.min(100, (s.value / maxVal) * 100);
-                return (
-                  <div key={stage}>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-text_secondary">{OPP_STAGE_LABEL[stage]}</span>
-                      <span className="font-body text-text_primary">
-                        {formatCompact(s.value)}
-                        <span className="ml-2 text-xs text-text_muted">· {s.count}</span>
-                      </span>
+                return stages.map((stage) => {
+                  const s = breakdown[stage] ?? { value: 0, count: 0 };
+                  const pct = Math.min(100, ((s.value ?? 0) / maxVal) * 100);
+                  return (
+                    <div key={stage}>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-text_secondary">{OPP_STAGE_LABEL[stage] || stage}</span>
+                        <span className="font-body text-text_primary">
+                          {formatCompact(s.value ?? 0)}
+                          <span className="ml-2 text-xs text-text_muted">· {s.count ?? 0}</span>
+                        </span>
+                      </div>
+                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-elevated">
+                        <div
+                          className="h-full rounded-full bg-gold transition-all"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-elevated">
-                      <div
-                        className="h-full rounded-full bg-gold transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
           </div>
         </div>
       </div>
